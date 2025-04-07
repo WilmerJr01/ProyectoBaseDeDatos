@@ -9,3 +9,6 @@
 *.njsproj
 *.sln
 *.sw?
+
+*.csv
+*.env
