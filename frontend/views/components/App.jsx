@@ -1,31 +1,52 @@
-import { useState } from 'react'
-import './App.css'
+import { useState } from "react";
+import { useEffect } from "react";
+import "../styles/App.css";
+import Header from "./header.jsx";
+import axios from "axios";
+import { formDate } from "./functions.js";
 
 function App() {
-  const [count, setCount] = useState(0)
+  // Espacio para estados
+  // const [count, setCount] = useState(0)
+  //onClick={() => setCount((count) => count + 1)}
+  const [partidos, setPartidos] = useState([]);
 
+  useEffect(() => {
+    axios.get('http://localhost:3000/database/last')
+    .then((response) => {
+      setPartidos(response.data);
+    })
+    .catch((error) => {
+      console.error('Error al obtener los partidos:', error);
+    })
+  }, []);
+
+  //Espacio del return
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-        </a>
-        <a href="https://react.dev" target="_blank">
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Header />
+      <main>
+        <div className="hero">
+          <h1>Bienvenido a la App de Fútbol</h1>
+          <p>
+            Tu fuente de información sobre competiciones y partidos en directo.
+          </p>
+        </div>
+        <div className="content">
+          <h2>Últimos Partidos</h2>
+          <ul className="match-list">
+            {
+              partidos.map((partido, index) => (
+                <li key={index} className="match-item">
+                  <p>Fecha {formDate(partido.date)}</p>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </main>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
