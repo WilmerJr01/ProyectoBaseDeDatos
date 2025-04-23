@@ -14,6 +14,8 @@ router.get(`/${path}/last`, controllerDB.getLastData)
 
 const path2 = 'api'
 
-router.get(`/${path2}`, controllerAPI.getCompetitions)
+router.get(`/${path2}/competitions`, controllerAPI.getCompetitions)
+
+router.get(`/${path2}/:league/:year/:round`, controllerAPI.getMatches)
 
 module.exports = router

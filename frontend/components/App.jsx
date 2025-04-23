@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import "../styles/App.css";
 import Header from "./header.jsx";
 import axios from "axios";
-import { formDate } from "./functions.js";
+import { formDate } from "../functions/functions.js";
 
 function App() {
   // Espacio para estados
