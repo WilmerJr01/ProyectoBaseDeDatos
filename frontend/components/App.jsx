@@ -3,7 +3,8 @@ import { useEffect } from "react";
 import "../styles/App.css";
 import Header from "./header.jsx";
 import axios from "axios";
-import { formDate } from "../functions/functions.js";
+import MapaMundi from "./MapaMundi.jsx";
+import { formDate } from "../functions/functionsDB.js";
 
 function App() {
   // Espacio para estados
@@ -45,6 +46,10 @@ function App() {
           </ul>
         </div>
       </main>
+      <div className="mapa">
+        <MapaMundi/>
+      </div>
+        
     </>
   );
 }

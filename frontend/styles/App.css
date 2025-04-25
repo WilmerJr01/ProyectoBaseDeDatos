@@ -1,72 +1,81 @@
-.header{
-  background-color: #151219;
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 100px;
-  padding: 5px 5%;
+.header {
+    background-color: #151219;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100px;
+    padding: 5px 5%;
 }
 
-.logo{
-  display: flex;
-  width: 100px;
-  height: 100px;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
+.logo {
+    display: flex;
+    width: 100px;
+    height: 100px;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
 }
 
-.logo:hover{
-  transform: scale(1.1);
+.logo:hover {
+    transform: scale(1.1);
 }
 
-.nav-list{
-  display: flex;
-  list-style: none;
-  gap: 30px;
+.nav-list {
+    display: flex;
+    list-style: none;
+    gap: 30px;
 }
 
 .nav-item a {
-  text-decoration: none;
-  color: #fff;
+    text-decoration: none;
+    color: #fff;
 }
 
 .nav-item a:hover {
-  color: #f0a500;
+    color: #f0a500;
 }
 
 .nav-item {
-  font-size: 18px;
-  font-weight: 500;
-  transition: all 0.3s ease-in-out;
+    font-size: 18px;
+    font-weight: 500;
+    transition: all 0.3s ease-in-out;
 }
 
-.nav-item:hover{
-  color: #f0a500;
-  transform: scale(1.2);
+.nav-item:hover {
+    color: #f0a500;
+    transform: scale(1.2);
 }
 
 .header .btn button {
-  font-weight: 700;
-  font-size: 15px;
-  color: #151219;
-  background: #fff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
+    font-weight: 700;
+    font-size: 15px;
+    color: #151219;
+    background: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
 }
 
 .header .btn button:hover {
-  background: #f0a500;
-  color: #151219;
-  transform: scale(1.1);
+    background: #f0a500;
+    color: #151219;
+    transform: scale(1.1);
 }
 
-main{
-  color: #fff;
-  margin: 5px 5%;
+main {
+    color: #fff;
+    margin: 5px 5%;
+}
+
+.mapa {
+    width: 80%; /* El mapa ocupará el 80% del ancho del contenedor */
+    height: 500px; /* El mapa tendrá 500px de altura */
+    margin: 0 auto; /* Esto centra el mapa horizontalmente */
+    background-color: #f0a500;
+    border-radius: 10px; /* Bordes redondeados */
+    
 }
