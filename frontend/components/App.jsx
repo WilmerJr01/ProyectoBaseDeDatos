@@ -4,6 +4,9 @@ import "../styles/App.css";
 import Header from "./header.jsx";
 import axios from "axios";
 import { formDate } from "../functions/functions.js";
+import { Routes, Route } from "react-router-dom";
+import Partidos from "./partidos.jsx";
+
 
 function App() {
   // Espacio para estados
@@ -25,26 +28,28 @@ function App() {
   return (
     <>
       <Header />
-      <main>
-        <div className="hero">
-          <h1>Bienvenido a la App de Fútbol</h1>
-          <p>
-            Tu fuente de información sobre competiciones y partidos en directo.
-          </p>
-        </div>
-        <div className="content">
-          <h2>Últimos Partidos</h2>
-          <ul className="match-list">
-            {
-              partidos.map((partido, index) => (
-                <li key={index} className="match-item">
-                  <p>Fecha {formDate(partido.date)}</p>
-                </li>
-              ))
-            }
-          </ul>
-        </div>
-      </main>
+      <Routes>
+        <Route path="/" element={
+          <main>
+            <div className="hero">
+              <h1>Bienvenido a la App de Fútbol</h1>
+              <p>Tu fuente de información sobre competiciones y partidos en directo.</p>
+            </div>
+            <div className="content">
+              <h2>Últimos Partidos</h2>
+              <ul className="match-list">
+                {partidos.map((partido, index) => (
+                  <li key={index} className="match-item">
+                    <p>Fecha {formDate(partido.date)}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </main>
+        } />
+        <Route path="/partidos" element={<Partidos />} />
+        <Route path="/competencias" element={<Competencias />} /> {/* ➡️ Agregado aquí */}
+      </Routes>
     </>
   );
 }
