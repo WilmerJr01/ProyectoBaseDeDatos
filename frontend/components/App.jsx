@@ -1,17 +1,12 @@
-import { useState } from "react";
-import { useEffect } from "react";
+import { Routes, Route } from "react-router-dom";
+import { useState, useEffect } from "react";
 import "../styles/App.css";
 import Header from "./header.jsx";
+import Partidos from "./partidos.jsx";
 import axios from "axios";
 import { formDate } from "../functions/functions.js";
-import { Routes, Route } from "react-router-dom";
-import Partidos from "./partidos.jsx";
-
 
 function App() {
-  // Espacio para estados
-  // const [count, setCount] = useState(0)
-  //onClick={() => setCount((count) => count + 1)}
   const [partidos, setPartidos] = useState([]);
 
   useEffect(() => {
@@ -24,7 +19,6 @@ function App() {
     })
   }, []);
 
-  //Espacio del return
   return (
     <>
       <Header />
@@ -48,7 +42,6 @@ function App() {
           </main>
         } />
         <Route path="/partidos" element={<Partidos />} />
-        <Route path="/competencias" element={<Competencias />} /> {/* ➡️ Agregado aquí */}
       </Routes>
     </>
   );

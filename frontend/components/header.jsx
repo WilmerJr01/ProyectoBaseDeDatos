@@ -15,7 +15,7 @@ function Header() {
             <Link to="/">Inicio</Link>
           </li>
           <li className="nav-item">
-            <Link to="/competencias" onMouseEnter={() => { setMouseIn('competencias') }} onMouseLeave={() => { setMouseIn('') }}>Competencias</Link> {/* ➡️ Modificado aquí */}
+            <Link to="#" onMouseEnter={() => { setMouseIn('competencias') }} onMouseLeave={() => { setMouseIn('') }}>Competencias</Link>
           </li>
           <li className="nav-item">
             <Link to="/partidos" onMouseEnter={() => { setMouseIn('partidos') }} onMouseLeave={() => { setMouseIn('') }}>Partidos</Link>
@@ -33,3 +33,4 @@ function Header() {
 }
 
 export default Header;
+
