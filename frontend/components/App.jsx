@@ -3,6 +3,9 @@ import { useState, useEffect } from "react";
 import "../styles/App.css";
 import Header from "./header.jsx";
 import Partidos from "./partidos.jsx";
+import Competencias from "./competencias.jsx";
+import Equipos from "./equipos.jsx";
+import SobreNosotros from "./SobreNosotros.jsx"; // ➡️ Agregado aquí
 import axios from "axios";
 import { formDate } from "../functions/functions.js";
 
@@ -42,6 +45,9 @@ function App() {
           </main>
         } />
         <Route path="/partidos" element={<Partidos />} />
+        <Route path="/competencias" element={<Competencias />} />
+        <Route path="/equipos" element={<Equipos />} />
+        <Route path="/SobreNosotros" element={<SobreNosotros />} />
       </Routes>
     </>
   );

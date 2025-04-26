@@ -15,17 +15,17 @@ function Header() {
             <Link to="/">Inicio</Link>
           </li>
           <li className="nav-item">
-            <Link to="#" onMouseEnter={() => { setMouseIn('competencias') }} onMouseLeave={() => { setMouseIn('') }}>Competencias</Link>
+            <Link to="/competencias" onMouseEnter={() => { setMouseIn('competencias') }} onMouseLeave={() => { setMouseIn('') }}>Competencias</Link>
           </li>
           <li className="nav-item">
             <Link to="/partidos" onMouseEnter={() => { setMouseIn('partidos') }} onMouseLeave={() => { setMouseIn('') }}>Partidos</Link>
           </li>
           <li className="nav-item">
-            <Link to="#" onMouseEnter={() => { setMouseIn('equipos') }} onMouseLeave={() => { setMouseIn('') }}>Equipos</Link>
+            <Link to="equipos" onMouseEnter={() => { setMouseIn('equipos') }} onMouseLeave={() => { setMouseIn('') }}>Equipos</Link>
           </li>
         </ul>
       </nav>
-      <Link to="#" className="btn">
+      <Link to="/SobreNosotros" className="btn">
         <button>Sobre nosotros</button>
       </Link>
     </header>
