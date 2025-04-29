@@ -2,6 +2,8 @@ const model = require('../models/matchModel.js')
 const fs = require('fs')
 const fastCsv = require('fast-csv')
 const validator = require('./validator.js');
+const DateOnly = require('mongoose-dateonly');
+
 
 exports.getData = (req, res)  => {
     model.find()
@@ -28,21 +30,33 @@ exports.getLastData = (req, res) => {
 
 exports.getLeagueYear = (req, res) => {
     const { league, year } = req.params;
+    const y = parseInt(year);  // Asegurémonos de que el año sea un número
 
-    const startDate = parseInt(`${year-1}0801`);
-    const endDate = parseInt(`${year}0615`);
+    const startYear = y - 1;  // Año anterior
+    const endYear = y;        // Año actual
+
+    console.log(`Buscando partidos para la liga: ${league} en el rango de años: ${startYear} - ${endYear}`);
+
+    // Convertimos las fechas al formato numérico YYYYMMDD
+    const startDate = parseInt(`${startYear}08${'1'}`);  // 1 de agosto del año anterior
+    const endDate = parseInt(`${endYear}06${'15'}`);       // 15 de junio del año actual
+
+    console.log(`Fechas de búsqueda: Desde: ${startDate} hasta: ${endDate}`);
 
     model.find({
         competition: league,
-        date: { $gte: startDate, $lte: endDate }
+        date: { $gte: startDate, $lte: endDate } 
     })
     .then(matches => {
+        console.log(`Número de partidos encontrados: ${matches.length}`);
         res.json(matches);
     })
     .catch(err => {
+        console.error('Error al obtener los partidos:', err);
         res.status(500).json({ message: "Error al obtener los partidos", error: err });
     });
 };
+
 
 
 // Esta función se encarga de leer un archivo CSV y cargar sus datos en la base de datos
