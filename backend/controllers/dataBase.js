@@ -26,6 +26,25 @@ exports.getLastData = (req, res) => {
 }
 
 
+exports.getLeagueYear = (req, res) => {
+    const { league, year } = req.params;
+
+    const startDate = parseInt(`${year-1}0801`);
+    const endDate = parseInt(`${year}0615`);
+
+    model.find({
+        competition: league,
+        date: { $gte: startDate, $lte: endDate }
+    })
+    .then(matches => {
+        res.json(matches);
+    })
+    .catch(err => {
+        res.status(500).json({ message: "Error al obtener los partidos", error: err });
+    });
+};
+
+
 // Esta función se encarga de leer un archivo CSV y cargar sus datos en la base de datos
 exports.fillData = async (req, res) => {
     const filePath = 'models/dataset/games.csv';

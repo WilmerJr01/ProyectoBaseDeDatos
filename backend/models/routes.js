@@ -12,6 +12,8 @@ router.post(`/${path}/fill`, controllerDB.fillData)
 
 router.get(`/${path}/last`, controllerDB.getLastData)
 
+router.get(`/${path}/:league/:year`, controllerDB.getLeagueYear)
+
 const path2 = 'api'
 
 router.get(`/${path2}/competitions`, controllerAPI.getCompetitions)
