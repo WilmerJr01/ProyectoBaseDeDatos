@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { formDate } from "../functions/functions.js";
+import MapaMundi from "./MapaMundi.jsx";
 
 function Inicio() {
     const [partidos, setPartidos] = useState([]);
@@ -34,6 +35,9 @@ function Inicio() {
                         </li>
                     ))}
                 </ul>
+            </div>
+            <div className="mapa">
+                <MapaMundi />
             </div>
         </main>
     );

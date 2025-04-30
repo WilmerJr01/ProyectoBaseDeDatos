@@ -7,7 +7,8 @@ import Inicio from "./inicio.jsx";
 import Partidos from "./partidos.jsx";
 import Competencias from "./competencias.jsx";
 import Equipos from "./equipos.jsx";
-import SobreNosotros from "./SobreNosotros.jsx"; // ➡️ Agregado aquí
+import SobreNosotros from "./SobreNosotros.jsx";
+import enVivo from "./enVivo.jsx";
 
 function App() {
   return (
@@ -19,6 +20,8 @@ function App() {
         <Route path="/competencias" element={<Competencias />} />
         <Route path="/equipos" element={<Equipos />} />
         <Route path="/SobreNosotros" element={<SobreNosotros />} />
+        <Route path="/enVivo" element={<enVivo />} />
+        <Route path="*" element={<Inicio />} />
       </Routes>
     </>
   );

@@ -1,8 +1,8 @@
 function Competencias() {
     return (
-      <div>
+      <main>
         <h1>Esta es la página de Competencias</h1>
-      </div>
+      </main>
     );
   }
   

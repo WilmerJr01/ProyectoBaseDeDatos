@@ -1,8 +1,8 @@
 function Equipos() {
     return (
-      <div>
+      <main>
         <h1>Esta es la página de Equipos</h1>
-      </div>
+      </main>
     );
   }
   
