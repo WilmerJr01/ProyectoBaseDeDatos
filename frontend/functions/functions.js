@@ -41,8 +41,7 @@ export function interceptorCompetition(competition){
 export function interceptorCompetitionCountry(competition) {
     switch (competition) {
         case "Copa Lib":
-        case "Fifa Club":
-            return "Sur América";  // Copa Libertadores y FIFA Club World Cup son de Sudamérica
+            return "Sudamerica";  // Copa Libertadores y FIFA Club World Cup son de Sudamérica
         case "spain":
             return "España";
         case "england":
@@ -67,7 +66,7 @@ export function interceptorCompetitionCountry(competition) {
             return "Uruguay";
         case "ecuador":
             return "Ecuador";
-        default:
-            return competition; // Si no coincide, retorna el nombre de la competencia tal como está
+        case "Fifa Club":
+            return "Mundo"
     }
 }
