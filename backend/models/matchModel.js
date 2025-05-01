@@ -3,7 +3,7 @@ const DateOnly = require('mongoose-dateonly')(mongoose);
 
 const matchSchema = new mongoose.Schema({
     date: {
-        type: DateOnly,
+        type: Number,
         required: true
     },
     teamHome: {

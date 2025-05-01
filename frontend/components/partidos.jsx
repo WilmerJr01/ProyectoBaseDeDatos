@@ -1,8 +1,8 @@
 function Partidos() {
     return (
-      <div>
+      <main>
         <h1>Esta es la página de Partidos</h1>
-      </div>
+      </main>
     );
   }
   
