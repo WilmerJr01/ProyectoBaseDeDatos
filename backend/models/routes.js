@@ -16,11 +16,15 @@ router.get(`/${path}/competitions`, controllerDB.getCompetitions)
 
 router.get(`/${path}/last`, controllerDB.getLastData)
 
-router.get(`/${path}/match/:league/:year`, controllerDB.getMatch)
+router.get(`/${path}/matchSimple/:league/:year`, controllerDB.getMatchSimple)
+
+router.get(`/${path}/matchDetail/:league/:year`, controllerDB.getMatchDetail)
 
 router.get(`/${path}/team/:league/:year`, controllerDB.getTeams)
 
 router.get(`/${path}/goals/:league/:year`, controllerDB.getGoal)
+
+router.get(`/${path}/find/:league/:date/:teamHome/:teamAway`, controllerDB.getFindMatch)
 
 
 //Metodos delete

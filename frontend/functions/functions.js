@@ -37,3 +37,37 @@ export function interceptorCompetition(competition){
             return competition;
     }
 }
+
+export function interceptorCompetitionCountry(competition) {
+    switch (competition) {
+        case "Copa Lib":
+        case "Fifa Club":
+            return "Sur América";  // Copa Libertadores y FIFA Club World Cup son de Sudamérica
+        case "spain":
+            return "España";
+        case "england":
+            return "Inglaterra";
+        case "italy":
+            return "Italia";
+        case "france":
+            return "Francia";
+        case "germany":
+            return "Alemania";
+        case "portugal":
+            return "Portugal";
+        case "netherlands":
+            return "Países Bajos";
+        case "colombia":
+            return "Colombia";
+        case "argentina":
+            return "Argentina";
+        case "brazil":
+            return "Brasil";
+        case "uruguay":
+            return "Uruguay";
+        case "ecuador":
+            return "Ecuador";
+        default:
+            return competition; // Si no coincide, retorna el nombre de la competencia tal como está
+    }
+}

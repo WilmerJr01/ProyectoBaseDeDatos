@@ -3,7 +3,7 @@ import Select from "react-select";
 import axios from "axios";
 import { interceptorCompetition } from "../functions/functions";
 import "../styles/Competencias.css";
-import CompetenciaSeleccionada from "./competenciaSeleccionada.jsx";
+import CompetenciaSeleccionada from "./Competencias/competenciaSeleccionada.jsx"; // Ajusta la ruta si es necesario
 
 function Competencias() {
     const [opciones, setOpciones] = useState([]);

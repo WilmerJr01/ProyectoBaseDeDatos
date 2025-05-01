@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { formDate } from "../functions/functions.js";
-import MapaMundi from "./MapaMundi.jsx";
+import MapaMundi from "./Inicio/MapaMundi.jsx";
 
 function Inicio() {
     const [partidos, setPartidos] = useState([]);

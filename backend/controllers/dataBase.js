@@ -3,233 +3,359 @@ const fs = require("fs");
 const fastCsv = require("fast-csv");
 const validator = require("./validator.js");
 
-exports.getMatch = (req, res) => {
+exports.getMatchSimple = (req, res) => {
     const { league, year } = req.params;
     const y = parseInt(year); // Asegurémonos de que el año sea un número
 
-    if (y == 0) {
+    // Si el año es 0, queremos todos los partidos registrados
+    if (y === 0) {
         model
-            .find({
-                competition: league,
-            })
-            .then((matches) => {
-                console.log(
-                    `Número de partidos encontrados: ${matches.length}`
-                );
-                res.json(matches);
+            .aggregate([
+                { $match: { competition: league } }, // Filtrar por liga
+                {
+                    $group: {
+                        _id: null,
+                        firstDate: { $min: "$date" }, // Obtener la primera fecha
+                        totalMatches: { $count: {} } // Contar el total de partidos
+                    }
+                }
+            ])
+            .then((result) => {
+                if (result.length === 0) {
+                    return res.status(404).json({ message: "No se encontraron partidos" });
+                }
+
+                const firstDate = result[0].firstDate;
+                const totalMatches = result[0].totalMatches;
+
+                res.json({ firstDate, totalMatches }); // Devolver los resultados
             })
             .catch((err) => {
-                console.error("Error al obtener los partidos:", err);
+                console.error("Error al obtener las fechas de los partidos:", err);
                 res.status(500).json({
-                    message: "Error al obtener los partidos",
+                    message: "Error al obtener las fechas de los partidos",
                     error: err,
                 });
             });
     } else {
-        console.log(
-            `Buscando partidos para la liga: ${league} en el año: ${y}`
-        );
-
-        // Convertimos las fechas al formato numérico YYYYMMDD
-        const startDate = parseInt(`${y - 1}0801`); // 1 de agosto del año anterior
-        const endDate = parseInt(`${y}0701`); // 1 de julio del año actual
-
-        console.log(
-            `Fechas de búsqueda: Desde: ${startDate} hasta: ${endDate}`
-        );
+        // Convertir el año proporcionado en un rango de fechas (primer y último día del año)
+        const startDate = parseInt(`${y}0101`); // 1 de enero del año
+        const endDate = parseInt(`${y}1231`); // 31 de diciembre del año
 
         model
-            .find({
-                competition: league,
-                date: { $gte: startDate, $lte: endDate },
-            })
-            .then((matches) => {
-                console.log(
-                    `Número de partidos encontrados: ${matches.length}`
-                );
-                res.json(matches);
+            .aggregate([
+                { 
+                    $match: { 
+                        competition: league, 
+                        date: { $gte: startDate, $lte: endDate } // Filtrar por rango de fechas
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        firstDate: { $min: "$date" }, // Obtener la primera fecha dentro del rango
+                        totalMatches: { $count: {} } // Contar el total de partidos dentro del rango
+                    }
+                }
+            ])
+            .then((result) => {
+                if (result.length === 0) {
+                    return res.status(404).json({ message: "No se encontraron partidos en este año" });
+                }
+
+                const firstDate = result[0].firstDate;
+                const totalMatches = result[0].totalMatches;
+
+                res.json({ firstDate, totalMatches }); // Devolver los resultados
             })
             .catch((err) => {
-                console.error("Error al obtener los partidos:", err);
+                console.error("Error al obtener las fechas de los partidos:", err);
                 res.status(500).json({
-                    message: "Error al obtener los partidos",
+                    message: "Error al obtener las fechas de los partidos",
                     error: err,
                 });
             });
     }
 };
 
-exports.getGoal = (req, res) => {
-    const competencia = req.params.liga; // ej. "spain"
-  
-    model.aggregate([
-      { $match: { competition: competencia } },
+exports.getMatchDetail = (req, res) => {
+  const { league, year } = req.params;
+  const y = parseInt(year); // Asegurémonos de que el año sea un número
+
+  if (y == 0) {
+    model
+      .find({
+        competition: league,
+      })
+      .then((matches) => {
+        console.log(`Número de partidos encontrados: ${matches.length}`);
+        res.json(matches);
+      })
+      .catch((err) => {
+        console.error("Error al obtener los partidos:", err);
+        res.status(500).json({
+          message: "Error al obtener los partidos",
+          error: err,
+        });
+      });
+  } else {
+    console.log(`Buscando partidos para la liga: ${league} en el año: ${y}`);
+
+    // Convertimos las fechas al formato numérico YYYYMMDD
+    const startDate = parseInt(`${y}0101`); // 1 de enero del año
+    const endDate = parseInt(`${y}1231`); // 31 de diciembre del año
+
+    console.log(`Fechas de búsqueda: Desde: ${startDate} hasta: ${endDate}`);
+
+    model
+      .find({
+        competition: league,
+        date: { $gte: startDate, $lte: endDate },
+      })
+      .then((matches) => {
+        console.log(`Número de partidos encontrados: ${matches.length}`);
+        res.json(matches);
+      })
+      .catch((err) => {
+        console.error("Error al obtener los partidos:", err);
+        res.status(500).json({
+          message: "Error al obtener los partidos",
+          error: err,
+        });
+      });
+  }
+};
+
+exports.getFindMatch = async (req, res) => {
+  const { league, date, teamHome, teamAway } = req.params;
+  const y = parseInt(date); // Asegurémonos de que el año sea un número
+
+  model
+    .findOne({
+      competition: league,
+      date: y,
+      teamHome: teamHome,
+      teamAway: teamAway,
+    })
+    .then((match) => {
+      if (match) {
+        console.log(`Partido encontrado: ${match}`);
+        res.json(match);
+      } else {
+        console.log("No se encontró el partido");
+        res.status(200).json({ message: "Partido no encontrado" });
+      }
+    })
+    .catch((err) => {
+      console.error("Error al buscar el partido:", err);
+      res.status(500).json({
+        message: "Error al buscar el partido",
+        error: err,
+      });
+    });
+};
+
+exports.getGoal = async (req, res) => {
+  const { league, year } = req.params;
+
+  try {
+    // Si el año es 0, no limitamos por fechas
+    let startDate = 0;
+    let endDate = new Date().getFullYear() * 10000 + 1231; // Último día del año actual (ej. 20251231)
+
+    if (year !== "0") {
+      // Si el año no es 0, calculamos las fechas como antes
+      startDate = parseInt(`${year}0101`, 10); // Primer día del año
+      endDate = parseInt(`${parseInt(year) + 1}0101`, 10); // Primer día del siguiente año
+    }
+
+    // Verificar que las fechas sean correctas
+    console.log(
+      `Buscando goles para la liga ${league}, desde ${startDate} hasta ${endDate}`
+    );
+
+    const result = await model.aggregate([
+      {
+        $match: {
+          competition: league,
+          date: { $gte: startDate, $lt: endDate }, // Rango de fechas
+        },
+      },
       {
         $group: {
           _id: null,
-          totalGoles: { $sum: { $add: ["$goalsHome", "$goalsAway"] } }
-        }
-      }
-    ])
-    .then(result => {
-      const total = result.length > 0 ? result[0].totalGoles : 0;
-      res.status(200).json({ totalGoles: total });
-    })
-    .catch(err => {
-      console.error("Error al calcular los goles:", err);
-      res.status(500).json({ error: "Error al calcular los goles" });
-    });
-  };
+          totalGoalsHome: {
+            $sum: "$goalsHome", // Sumamos los goles del equipo local
+          },
+          totalGoalsAway: {
+            $sum: "$goalsAway", // Sumamos los goles del equipo visitante
+          },
+        },
+      },
+    ]);
+
+    const totalGoalsHome = result[0]?.totalGoalsHome || 0;
+    const totalGoalsAway = result[0]?.totalGoalsAway || 0;
+
+    const totalGoals = totalGoalsHome + totalGoalsAway; // Suma total de goles
+
+    res
+      .status(200)
+      .json({ league, year, totalGoalsHome, totalGoalsAway, totalGoals });
+  } catch (error) {
+    console.error("Error al calcular los goles:", error.message);
+    res.status(500).json({ error: "No se pudieron calcular los goles" });
+  }
+};
 
 exports.getData = (req, res) => {
-    model
-        .find()
-        .then((data) => {
-            res.status(200).json(data);
-        })
-        .catch((err) => {
-            console.error("Error fetching data:", err);
-            res.status(500).json({ error: "Internal server error" });
-        });
+  model
+    .find()
+    .then((data) => {
+      res.status(200).json(data);
+    })
+    .catch((err) => {
+      console.error("Error fetching data:", err);
+      res.status(500).json({ error: "Internal server error" });
+    });
 };
 
 exports.getCompetitions = (req, res) => {
-    model
-        .distinct("competition")
-        .then((competitions) => {
-            res.status(200).json(competitions);
-        })
-        .catch((err) => {
-            console.error("Error fetching competitions:", err);
-            res.status(500).json({ error: "Internal server error" });
-        });
+  model
+    .distinct("competition")
+    .then((competitions) => {
+      res.status(200).json(competitions);
+    })
+    .catch((err) => {
+      console.error("Error fetching competitions:", err);
+      res.status(500).json({ error: "Internal server error" });
+    });
 };
 
 exports.getLastData = (req, res) => {
-    model
-        .find()
-        .limit(10)
-        .then((data) => {
-            res.status(200).json(data);
-        })
-        .catch((err) => {
-            console.error("Error fetching last data:", err);
-            res.status(500).json({ error: "Internal server error" });
-        });
+  model
+    .find()
+    .limit(10)
+    .then((data) => {
+      res.status(200).json(data);
+    })
+    .catch((err) => {
+      console.error("Error fetching last data:", err);
+      res.status(500).json({ error: "Internal server error" });
+    });
 };
 
 exports.getTeams = (req, res) => {
-    const { league, year } = req.params;
+  const { league, year } = req.params;
 
-    const y = parseInt(year); // Asegurémonos de que el año sea un número
-    if (y == 0) {
-        model
-            .distinct("teamHome", { competition: league })
-            .then((teams) => {
-                console.log(`Equipos encontrados: ${teams.length}`);
-                res.json(teams);
-            })
-            .catch((err) => {
-                console.error("Error al obtener los equipos:", err);
-                res.status(500).json({
-                    message: "Error al obtener los equipos",
-                    error: err,
-                });
-            });
-    } else {
-        model
-            .distinct("teamHome", {
-                competition: league,
-                date: { $gte: `${y - 1}0801`, $lte: `${y}0701` },
-            })
-            .then((teams) => {
-                console.log(`Equipos encontrados: ${teams.length}`);
-                res.json(teams);
-            })
-            .catch((err) => {
-                console.error("Error al obtener los equipos:", err);
-                res.status(500).json({
-                    message: "Error al obtener los equipos",
-                    error: err,
-                });
-            });
-    }
+  const y = parseInt(year); // Asegurémonos de que el año sea un número
+  if (y == 0) {
+    model
+      .distinct("teamHome", { competition: league })
+      .then((teams) => {
+        console.log(`Equipos encontrados: ${teams.length}`);
+        res.json(teams);
+      })
+      .catch((err) => {
+        console.error("Error al obtener los equipos:", err);
+        res.status(500).json({
+          message: "Error al obtener los equipos",
+          error: err,
+        });
+      });
+  } else {
+    model
+      .distinct("teamHome", {
+        competition: league,
+        date: { $gte: `${y - 1}0801`, $lte: `${y}0701` },
+      })
+      .then((teams) => {
+        console.log(`Equipos encontrados: ${teams.length}`);
+        res.json(teams);
+      })
+      .catch((err) => {
+        console.error("Error al obtener los equipos:", err);
+        res.status(500).json({
+          message: "Error al obtener los equipos",
+          error: err,
+        });
+      });
+  }
 };
 
 exports.deleteMatches = async (req, res) => {
-    const { year, league } = req.params;
+  const { year, league } = req.params;
 
-    const y = parseInt(year); // Asegurémonos de que el año sea un número
-    // Construir los límites del año en formato numérico
-    const startDate = parseInt(`${y - 1}0801`);
-    const endDate = parseInt(`${y}0701`);
+  const y = parseInt(year); // Asegurémonos de que el año sea un número
+  // Construir los límites del año en formato numérico
+  const startDate = parseInt(`${y - 1}0801`);
+  const endDate = parseInt(`${y}0701`);
 
-    try {
-        const result = await model.deleteMany({
-            competition: league,
-            date: { $gte: startDate, $lte: endDate },
-        });
+  try {
+    const result = await model.deleteMany({
+      competition: league,
+      date: { $gte: startDate, $lte: endDate },
+    });
 
-        res.status(200).json({
-            message: "Partidos eliminados correctamente",
-            deletedCount: result.deletedCount,
-        });
-    } catch (error) {
-        console.error("Error al eliminar partidos:", error.message);
-        res.status(500).json({ error: "Error al eliminar partidos" });
-    }
+    res.status(200).json({
+      message: "Partidos eliminados correctamente",
+      deletedCount: result.deletedCount,
+    });
+  } catch (error) {
+    console.error("Error al eliminar partidos:", error.message);
+    res.status(500).json({ error: "Error al eliminar partidos" });
+  }
 };
 
 // Esta función se encarga de leer un archivo CSV y cargar sus datos en la base de datos
 exports.fillData = async (req, res) => {
-    const filePath = "models/dataset/games.csv";
-    const results = [];
+  const filePath = "models/dataset/games.csv";
+  const results = [];
 
-    try {
-        await new Promise((resolve, reject) => {
-            fs.createReadStream(filePath)
-                .pipe(fastCsv.parse({ headers: true }))
-                .on("data", (row) => {
-                    const newData = {
-                        date: row.date,
-                        teamHome: row.home,
-                        teamAway: row.away,
-                        goalsHome: parseInt(row.gh, 10),
-                        goalsAway: parseInt(row.ga, 10),
-                        competition: row.competition,
-                        homeCountry: row.home_country,
-                        awayCountry: row.away_country,
-                        homeContinent: row.home_continent,
-                        awayContinent: row.away_continent,
-                        levelCompetition: row.level,
-                    };
+  try {
+    await new Promise((resolve, reject) => {
+      fs.createReadStream(filePath)
+        .pipe(fastCsv.parse({ headers: true }))
+        .on("data", (row) => {
+          const newData = {
+            date: row.date,
+            teamHome: row.home,
+            teamAway: row.away,
+            goalsHome: parseInt(row.gh, 10),
+            goalsAway: parseInt(row.ga, 10),
+            competition: row.competition,
+            homeCountry: row.home_country,
+            awayCountry: row.away_country,
+            homeContinent: row.home_continent,
+            awayContinent: row.away_continent,
+            levelCompetition: row.level,
+          };
 
-                    const isValid =
-                        validator.validarNulos(newData) &&
-                        validator.validarLiga(newData);
-                    if (!isValid) return;
+          const isValid =
+            validator.validarNulos(newData) && validator.validarLiga(newData);
+          if (!isValid) return;
 
-                    // Crear una instancia del modelo con los datos validados
-                    const instance = new model(newData);
+          // Crear una instancia del modelo con los datos validados
+          const instance = new model(newData);
 
-                    results.push(instance);
-                })
-                .on("end", resolve)
-                .on("error", reject);
-        });
+          results.push(instance);
+        })
+        .on("end", resolve)
+        .on("error", reject);
+    });
 
-        // Guardar en la base de datos solo después de procesar todo el CSV
-        await model.insertMany(results);
-        console.log("Datos insertados correctamente:", results.length, "filas");
+    // Guardar en la base de datos solo después de procesar todo el CSV
+    await model.insertMany(results);
+    console.log("Datos insertados correctamente:", results.length, "filas");
 
-        console.log("Lectura del archivo CSV completada");
-        return res
-            .status(200)
-            .json({ message: "Datos actualizados correctamente" });
-    } catch (error) {
-        console.error("Error durante la carga de datos:", error);
-        return res
-            .status(500)
-            .json({ error: "Error al procesar o guardar los datos" });
-    }
+    console.log("Lectura del archivo CSV completada");
+    return res
+      .status(200)
+      .json({ message: "Datos actualizados correctamente" });
+  } catch (error) {
+    console.error("Error durante la carga de datos:", error);
+    return res
+      .status(500)
+      .json({ error: "Error al procesar o guardar los datos" });
+  }
 };
