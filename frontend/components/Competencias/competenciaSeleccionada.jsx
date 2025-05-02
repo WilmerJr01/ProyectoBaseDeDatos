@@ -14,7 +14,14 @@ import liga from "../../functions/liga.js"; // Ajusta la ruta si es necesario
 import CompetitionInfo from "./CompetitionInfo.jsx"; // Ajusta la ruta a donde guardaste CompetitionInfo.jsx
 
 // Registrar los componentes de Chart.js
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 function CompetenciaSeleccionada({ competencia }) {
   const [equipos, setEquipos] = useState([]);
@@ -120,7 +127,10 @@ function CompetenciaSeleccionada({ competencia }) {
       />
 
       {/* Contenedor para la gráfica */}
-      <div id="chart-container" style={{ marginTop: "20px", textAlign: "center" }}>
+      <div
+        id="chart-container"
+        style={{ marginTop: "20px", textAlign: "center" }}
+      >
         <h3>Gráfica de datos</h3>
         <div style={{ width: "80%", margin: "0 auto", height: "400px" }}>
           {/* Renderizar la gráfica */}
