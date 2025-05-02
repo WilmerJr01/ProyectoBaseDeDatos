@@ -1,0 +1,12 @@
+
+.Equipos-select {
+    min-width: 100px;
+    display: inline-block;
+    font-size: 15px;
+    color: white;
+    padding-left: 5px;
+  }
+  /* Texto extra */
+  .Equipos-seleccion {
+    color: white;
+  }
