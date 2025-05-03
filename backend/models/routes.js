@@ -1,31 +1,56 @@
-const express = require('express')
+const express = require("express");
 
-const controllerDB = require('../controllers/dataBase.js')
-const controllerAPI = require('../controllers/api.js')
-const router = express.Router()
+const controllerDB = require("../controllers/dataBase.js");
+const controllerAPI = require("../controllers/api.js");
+const router = express.Router();
 
-const path = 'database'
+//Metodos de la base de datos
 
-router.get(`/${path}`, controllerDB.getData)
+const path = "database";
 
-router.post(`/${path}/fill`, controllerDB.fillData)
+//Metodos get
 
-router.get(`/${path}/last`, controllerDB.getLastData)
+router.get(`/${path}`, controllerDB.getData);
 
-router.get(`/${path}/match/:league/:year`, controllerDB.getLeagueYear)
+router.get(`/${path}/competitions`, controllerDB.getCompetitions);
 
-router.get(`/${path}/team/:league/:year`, controllerDB.getTeams)
+router.get(`/${path}/last`, controllerDB.getLastData);
 
-router.delete(`/${path}/delete/:league/:year`, controllerDB.deleteMatches)
+router.get(`/${path}/matchSimple/:league/:year`, controllerDB.getMatchSimple);
 
-const path2 = 'api'
+router.get(`/${path}/matchDetail/:league/:year`, controllerDB.getMatchDetail);
 
-router.get(`/${path2}/competitions`, controllerAPI.getCompetitions)
+router.get(`/${path}/team/:league/:year`, controllerDB.getTeams);
 
-router.get(`/${path2}/match/:league/:year/:round`, controllerAPI.getMatches)
+router.get(`/${path}/goals/:league/:year`, controllerDB.getGoal);
 
-router.get(`/${path2}/team/:league/:year`, controllerAPI.getTeams)
+router.get(`/${path}/goalsByTeam/:league/:team`, controllerDB.getGoalByTeam);
 
-router.post(`/${path2}/fill/:league/:year`, controllerAPI.saveMatches)
+router.get(`/${path}/find/:league/:date/:teamHome/:teamAway`,controllerDB.getFindMatch);
 
-module.exports = router
+router.get(`/${path}/matchTeam/:league/:yearInicial/:yearFinal/:team`, controllerDB.getMatchTeam);
+
+router.get(`/${path}/goalsByYear/:yearInicial/:yearFinal/:league`, controllerDB.getGoalsByYear);
+
+//Metodos delete
+
+router.delete(`/${path}/delete/:league/:year`, controllerDB.deleteMatches);
+
+//Metodos post
+router.post(`/${path}/fill`, controllerDB.fillData);
+
+//Metodos de la API
+
+const path2 = "api";
+
+//Metodos get
+
+router.get(`/${path2}/competitions`, controllerAPI.getCompetitions);
+
+router.get(`/${path2}/match/:league/:year/:round`, controllerAPI.getMatches);
+
+router.get(`/${path2}/team/:league/:year`, controllerAPI.getTeams);
+
+router.post(`/${path2}/fill/:league/:year`, controllerAPI.saveMatches);
+
+module.exports = router;

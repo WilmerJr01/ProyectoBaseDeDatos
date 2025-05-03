@@ -165,10 +165,18 @@ exports.saveMatches = async (req, res) => {
 
         if (matchDate >= todayNumber) continue;
 
+        var homeTeam = ''
+        var awayTeam = ''
         // Convertimos los nombres con la función equiposEngland
-        const homeTeam = validator.equiposEngland(row.local);
-        const awayTeam = validator.equiposEngland(row.visitor);
+        if (league === "england") {
+        homeTeam = validator.equiposEngland(row.local);
+        awayTeam = validator.equiposEngland(row.visitor);
+        }
 
+        if (league === "spain") {
+        homeTeam = validator.equiposSpain(row.local);
+        awayTeam = validator.equiposSpain(row.visitor);
+        }
         if (!homeTeam || !awayTeam) continue; // Ignora si no se encuentra el nombre
 
         const exists = await model.findOne({

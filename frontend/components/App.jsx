@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Link } from "react-router-dom";
 import "../styles/App.css";
 
 //Componentes 
@@ -7,7 +7,7 @@ import Inicio from "./inicio.jsx";
 import Partidos from "./partidos.jsx";
 import Competencias from "./competencias.jsx";
 import Equipos from "./equipos.jsx";
-import SobreNosotros from "./SobreNosotros.jsx"; // ➡️ Agregado aquí
+import SobreNosotros from "./SobreNosotros.jsx";
 
 function App() {
   return (
@@ -19,6 +19,7 @@ function App() {
         <Route path="/competencias" element={<Competencias />} />
         <Route path="/equipos" element={<Equipos />} />
         <Route path="/SobreNosotros" element={<SobreNosotros />} />
+        <Route path="*" element={<Inicio />} />
       </Routes>
     </>
   );

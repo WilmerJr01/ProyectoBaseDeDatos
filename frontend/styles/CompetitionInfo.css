@@ -1,0 +1,52 @@
+.competition-card {
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+    margin-top: 10px;
+    background-color: #151219;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  
+  .competition-title {
+    font-size: 3rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .competition-country {
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: #555;
+    text-align: center;
+  }
+  
+  
+  .competition-stats {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+  
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+  
+  .stat-label {
+    font-size: 0.875rem;
+    color: #555;
+  }
+  
+  .stat-separator {
+    border-left: 1px solid #ddd;
+    height: 64px;
+  }
+  
