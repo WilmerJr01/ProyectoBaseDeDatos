@@ -10,16 +10,22 @@ function EquipoSeleccionado({ equipo, liga }) {
 
     const fetchData = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:3000/database/goalsByTeam/${liga}/${equipo}`
-        );
+        const [golesRes, fechasRes] = await Promise.all([
+          axios.get(`http://localhost:3000/database/goalsByTeam/${liga}/${equipo}`),
+          axios.get(`http://localhost:3000/database/matchTeam/${liga}/0/0/${equipo}`)
+        ]);
 
-        const { team, totalGoals } = res.data;
+        const { team, totalGoals } = golesRes.data;
+        const fechas = fechasRes.data;
 
         setInfo({
           name: team,
           totalGoals,
+          totalMatches: fechas.length,
+          firstDate: fechas[0].toString().slice(0,4) || "No disponible"
         });
+
+        console.log(info)
       } catch (err) {
         console.error("Error al obtener info del equipo:", err);
       }

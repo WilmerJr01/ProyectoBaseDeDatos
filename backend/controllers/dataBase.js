@@ -455,3 +455,34 @@ exports.getGoalsByYear = async (req, res) => {
     res.status(500).json({ error: "No se pudieron obtener los goles por año" });
   }
 };
+
+exports.getMatchTeam = (req, res) => {
+  const { league, yearInicial, yearFinal, team } = req.params;
+
+  const fechaInicio = parseInt(`${yearInicial}0101`);
+
+  const finalYear = yearFinal === "0" ? new Date().getFullYear() : parseInt(yearFinal);
+  const fechaFin = parseInt(`${finalYear}1231`);
+
+  model
+    .find(
+      {
+        competition: league,
+        date: { $gte: fechaInicio, $lte: fechaFin },
+        $or: [{ teamHome: team }, { teamAway: team }],
+      },
+      { date: 1, _id: 0 }
+    )
+    .sort({ date: 1 })
+    .then((matches) => {
+      const fechas = matches.map((m) => m.date);
+      res.status(200).json(fechas);
+    })
+    .catch((err) => {
+      console.error("Error al obtener las fechas de los partidos:", err);
+      res.status(500).json({
+        message: "Error al obtener las fechas",
+        error: err,
+      });
+    });
+};
