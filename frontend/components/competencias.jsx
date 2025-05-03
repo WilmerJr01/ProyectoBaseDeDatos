@@ -18,6 +18,7 @@ function Competencias() {
                     label: interceptorCompetition(nombre), // Solo modificamos la etiqueta que se mostrará
                 }));
                 setOpciones(formateadas);
+                console
             })
             .catch((error) => {
                 console.error("Error al obtener competencias:", error);
