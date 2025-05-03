@@ -411,7 +411,7 @@ exports.fillData = async (req, res) => {
 };
 
 exports.getGoalsByYear = async (req, res) => {
-  const { league } = req.params;
+  const { yearInicial, yearFinal, league } = req.params;
   console.log("Liga recibida:", league);
 
   try {
