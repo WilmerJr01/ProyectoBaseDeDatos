@@ -2,6 +2,7 @@ const model = require("../models/matchModel.js");
 const fs = require("fs");
 const fastCsv = require("fast-csv");
 const validator = require("./validator.js");
+const { CLIENT_RENEG_LIMIT } = require("tls");
 
 exports.getMatchSimple = (req, res) => {
   const { league, year } = req.params;
@@ -364,21 +365,48 @@ exports.fillData = async (req, res) => {
   }
 };
 
-exports.getGoalsBySeason = async (req, res) => {
+exports.getGoalsByYear = async (req, res) => {
   const { league } = req.params;
+  console.log("Liga recibida:", league);
 
   try {
     const result = await model.aggregate([
       {
         $match: {
-          competition: league
-        }
-      }
+          competition: league,
+        },
+      },
+      {
+        $group: {
+          _id: {
+            year: {
+              $substr: [{ $toString: "$date" }, 0, 4], // Extraer el año de la fecha
+            },
+          },
+          totalGoalsHome: { $sum: "$goalsHome" },
+          totalGoalsAway: { $sum: "$goalsAway" },
+        },
+      },
+      {
+        $project: {
+          year: "$_id.year",
+          totalGoals: { $add: ["$totalGoalsHome", "$totalGoalsAway"] },
+          _id: 0,
+        },
+      },
+      {
+        $sort: { year: 1 }, // Ordenar por año ascendente
+      },
     ]);
 
-    res.status(200).json(result);
+    const years = result.map((item) => item.year);
+    console.log("Años:", years);
+    const goals = result.map((item) => item.totalGoals);
+    console.log("Goles por año:", goals);
+
+    res.status(200).json({ years, goals });
   } catch (error) {
-    console.error("Error al obtener los goles por temporada:", error.message);
-    res.status(500).json({ error: "No se pudieron obtener los goles por temporada" });
+    console.error("Error al obtener los goles por año:", error.message);
+    res.status(500).json({ error: "No se pudieron obtener los goles por año" });
   }
 };

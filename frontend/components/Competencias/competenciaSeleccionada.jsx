@@ -70,11 +70,14 @@ function CompetenciaSeleccionada({ competencia }) {
 
     // Fetch de goles por temporada
     axios
-      .get(`http://localhost:3000/database/goalsBySeason/${competencia}`)
+      .get(`http://localhost:3000/database/goalsByYear/${competencia}`)
       .then((res) => {
-        const { seasons, goals } = res.data;
-        setAnios(seasons); // Guardar los años
-        setGolesPorTemporada(goals); // Guardar los goles por temporada
+        const { years, goals } = res.data;
+        setAnios(years); // Guardar los años
+        setGolesPorTemporada(goals);
+        console.log("años:", years);
+        console.log("goals:", goals);
+        liga.golesPorTemporada = goals;
       })
       .catch((err) => console.error("Error goles por temporada:", err));
   }, [competencia]);
