@@ -2,80 +2,85 @@ const model = require("../models/matchModel.js");
 const fs = require("fs");
 const fastCsv = require("fast-csv");
 const validator = require("./validator.js");
+const { CLIENT_RENEG_LIMIT } = require("tls");
 
 exports.getMatchSimple = (req, res) => {
-    const { league, year } = req.params;
-    const y = parseInt(year); // Asegurémonos de que el año sea un número
+  const { league, year } = req.params;
+  const y = parseInt(year); // Asegurémonos de que el año sea un número
 
-    // Si el año es 0, queremos todos los partidos registrados
-    if (y === 0) {
-        model
-            .aggregate([
-                { $match: { competition: league } }, // Filtrar por liga
-                {
-                    $group: {
-                        _id: null,
-                        firstDate: { $min: "$date" }, // Obtener la primera fecha
-                        totalMatches: { $count: {} } // Contar el total de partidos
-                    }
-                }
-            ])
-            .then((result) => {
-                if (result.length === 0) {
-                    return res.status(404).json({ message: "No se encontraron partidos" });
-                }
+  // Si el año es 0, queremos todos los partidos registrados
+  if (y === 0) {
+    model
+      .aggregate([
+        { $match: { competition: league } }, // Filtrar por liga
+        {
+          $group: {
+            _id: null,
+            firstDate: { $min: "$date" }, // Obtener la primera fecha
+            totalMatches: { $count: {} }, // Contar el total de partidos
+          },
+        },
+      ])
+      .then((result) => {
+        if (result.length === 0) {
+          return res
+            .status(404)
+            .json({ message: "No se encontraron partidos" });
+        }
 
-                const firstDate = result[0].firstDate;
-                const totalMatches = result[0].totalMatches;
+        const firstDate = result[0].firstDate;
+        const totalMatches = result[0].totalMatches;
 
-                res.json({ firstDate, totalMatches }); // Devolver los resultados
-            })
-            .catch((err) => {
-                console.error("Error al obtener las fechas de los partidos:", err);
-                res.status(500).json({
-                    message: "Error al obtener las fechas de los partidos",
-                    error: err,
-                });
-            });
-    } else {
-        // Convertir el año proporcionado en un rango de fechas (primer y último día del año)
-        const startDate = parseInt(`${y}0101`); // 1 de enero del año
-        const endDate = parseInt(`${y}1231`); // 31 de diciembre del año
+        res.json({ firstDate, totalMatches }); // Devolver los resultados
+      })
+      .catch((err) => {
+        console.error("Error al obtener las fechas de los partidos:", err);
+        res.status(500).json({
+          message: "Error al obtener las fechas de los partidos",
+          error: err,
+        });
+      });
+  } else {
+    // Convertir el año proporcionado en un rango de fechas (primer y último día del año)
+    const startDate = parseInt(`${y}0101`); // 1 de enero del año
+    const endDate = parseInt(`${y}1231`); // 31 de diciembre del año
 
-        model
-            .aggregate([
-                { 
-                    $match: { 
-                        competition: league, 
-                        date: { $gte: startDate, $lte: endDate } // Filtrar por rango de fechas
-                    }
-                },
-                {
-                    $group: {
-                        _id: null,
-                        firstDate: { $min: "$date" }, // Obtener la primera fecha dentro del rango
-                        totalMatches: { $count: {} } // Contar el total de partidos dentro del rango
-                    }
-                }
-            ])
-            .then((result) => {
-                if (result.length === 0) {
-                    return res.status(404).json({ message: "No se encontraron partidos en este año" });
-                }
+    model
+      .aggregate([
+        {
+          $match: {
+            competition: league,
+            date: { $gte: startDate, $lte: endDate }, // Filtrar por rango de fechas
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            firstDate: { $min: "$date" }, // Obtener la primera fecha dentro del rango
+            totalMatches: { $count: {} }, // Contar el total de partidos dentro del rango
+          },
+        },
+      ])
+      .then((result) => {
+        if (result.length === 0) {
+          return res
+            .status(404)
+            .json({ message: "No se encontraron partidos en este año" });
+        }
 
-                const firstDate = result[0].firstDate;
-                const totalMatches = result[0].totalMatches;
+        const firstDate = result[0].firstDate;
+        const totalMatches = result[0].totalMatches;
 
-                res.json({ firstDate, totalMatches }); // Devolver los resultados
-            })
-            .catch((err) => {
-                console.error("Error al obtener las fechas de los partidos:", err);
-                res.status(500).json({
-                    message: "Error al obtener las fechas de los partidos",
-                    error: err,
-                });
-            });
-    }
+        res.json({ firstDate, totalMatches }); // Devolver los resultados
+      })
+      .catch((err) => {
+        console.error("Error al obtener las fechas de los partidos:", err);
+        res.status(500).json({
+          message: "Error al obtener las fechas de los partidos",
+          error: err,
+        });
+      });
+  }
 };
 
 exports.getMatchDetail = (req, res) => {
@@ -357,5 +362,51 @@ exports.fillData = async (req, res) => {
     return res
       .status(500)
       .json({ error: "Error al procesar o guardar los datos" });
+  }
+};
+
+exports.getGoalsByYear = async (req, res) => {
+  const { league } = req.params;
+  console.log("Liga recibida:", league);
+
+  try {
+    const result = await model.aggregate([
+      {
+        $match: {
+          competition: league,
+        },
+      },
+      {
+        $group: {
+          _id: {
+            year: {
+              $substr: [{ $toString: "$date" }, 0, 4], // Extraer el año de la fecha
+            },
+          },
+          totalGoalsHome: { $sum: "$goalsHome" },
+          totalGoalsAway: { $sum: "$goalsAway" },
+        },
+      },
+      {
+        $project: {
+          year: "$_id.year",
+          totalGoals: { $add: ["$totalGoalsHome", "$totalGoalsAway"] },
+          _id: 0,
+        },
+      },
+      {
+        $sort: { year: 1 }, // Ordenar por año ascendente
+      },
+    ]);
+
+    const years = result.map((item) => item.year);
+    console.log("Años:", years);
+    const goals = result.map((item) => item.totalGoals);
+    console.log("Goles por año:", goals);
+
+    res.status(200).json({ years, goals });
+  } catch (error) {
+    console.error("Error al obtener los goles por año:", error.message);
+    res.status(500).json({ error: "No se pudieron obtener los goles por año" });
   }
 };
