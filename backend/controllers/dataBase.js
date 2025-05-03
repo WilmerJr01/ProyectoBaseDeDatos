@@ -457,9 +457,13 @@ exports.getGoalsByYear = async (req, res) => {
 };
 
 exports.getGoalsByYearTeam = async (req, res) => {
-  const { league, team } = req.params;
+  const { league, team, yearInicial, yearFinal } = req.params;
   console.log("Liga recibida:", league);
   console.log("Equipo recibido:", team);
+
+  // Determinar el rango de años
+  const startYear = yearInicial ? parseInt(yearInicial) : 0;
+  const endYear = yearFinal ? parseInt(yearFinal) : new Date().getFullYear();
 
   try {
     const result = await model.aggregate([
@@ -467,8 +471,8 @@ exports.getGoalsByYearTeam = async (req, res) => {
         $match: {
           competition: league,
           $or: [
-            { home: team },
-            { away: team },
+            { teamHome: team },
+            { teamAway: team },
           ],
         },
       },
@@ -479,17 +483,22 @@ exports.getGoalsByYearTeam = async (req, res) => {
             $switch: {
               branches: [
                 {
-                  case: { $eq: ["$home", team] },
+                  case: { $eq: ["$teamHome", team] },
                   then: "$goalsHome",
                 },
                 {
-                  case: { $eq: ["$away", team] },
+                  case: { $eq: ["$teamAway", team] },
                   then: "$goalsAway",
                 },
               ],
               default: 0,
             },
           },
+        },
+      },
+      {
+        $match: {
+          year: { $gte: startYear.toString(), $lte: endYear.toString() },
         },
       },
       {
@@ -509,7 +518,7 @@ exports.getGoalsByYearTeam = async (req, res) => {
         $sort: { year: 1 },
       },
     ]);
-    console.log()
+    console.log("Resultados de la agregación:", result);
 
     const years = result.map((item) => item.year);
     const goals = result.map((item) => item.totalGoals);
