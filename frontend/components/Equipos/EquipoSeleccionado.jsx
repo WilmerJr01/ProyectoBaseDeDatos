@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import CompetitionInfo from "../Competencias/CompetitionInfo.jsx";
+import EquiposInfo from "./EquiposInfo.jsx";
 
 function EquipoSeleccionado({ equipo, liga }) {
   const [info, setInfo] = useState(null);
@@ -10,20 +10,15 @@ function EquipoSeleccionado({ equipo, liga }) {
 
     const fetchData = async () => {
       try {
-        const [golesRes, partidosRes] = await Promise.all([
-          axios.get(`http://localhost:3000/database/goals/${liga}/${equipo}`),
-          axios.get(`http://localhost:3000/database/matchSimple/${liga}/${equipo}`),
-        ]);
+        const res = await axios.get(
+          `http://localhost:3000/database/goalsByTeam/${liga}/${equipo}`
+        );
 
-        const goles = golesRes.data.totalGoals;
-        const { firstDate, totalMatches } = partidosRes.data;
-        const primerAnio = firstDate.toString().slice(0, 4);
+        const { team, totalGoals } = res.data;
 
         setInfo({
-          name: equipo,
-          totalGoals: goles,
-          totalMatches: totalMatches,
-          firstSeason: primerAnio,
+          name: team,
+          totalGoals,
         });
       } catch (err) {
         console.error("Error al obtener info del equipo:", err);
@@ -39,7 +34,7 @@ function EquipoSeleccionado({ equipo, liga }) {
 
   return (
     <div style={{ color: "white" }}>
-      {info ? <CompetitionInfo liga={info} /> : <p>Cargando datos...</p>}
+      {info ? <EquiposInfo liga={info} /> : <p>Cargando datos...</p>}
     </div>
   );
 }

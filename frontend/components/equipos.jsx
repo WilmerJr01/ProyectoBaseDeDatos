@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import axios from "axios";
-import "../styles/Competencias.css"; // reutilizamos estilos
+import "../styles/Equipos.css"; // reutilizamos estilos
 import EquipoSeleccionado from "./Equipos/EquipoSeleccionado.jsx";
 import { interceptorCompetition } from "../functions/functions";
 
@@ -100,7 +100,7 @@ function Equipos() {
       {selectedLiga && (
         <>
           <label style={{ color: "white", marginTop: "1rem" }}>
-            Selecciona un equipo:
+          - Seleccione un equipo:
           </label>
           <div className="competencias-select">
             <Select

@@ -213,6 +213,51 @@ exports.getGoal = async (req, res) => {
   }
 };
 
+exports.getGoalByTeam = (req, res) => {
+  const { league, team } = req.params;
+
+  model.aggregate([
+    {
+      $match: {
+        competition: league,
+        $or: [{ teamHome: team }, { teamAway: team }],
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        totalGoals: {
+          $sum: {
+            $cond: [
+              { $eq: ["$teamHome", team] },
+              "$goalsHome",
+              {
+                $cond: [
+                  { $eq: ["$teamAway", team] },
+                  "$goalsAway",
+                  0
+                ]
+              }
+            ]
+          }
+        }
+      }
+    }
+  ])
+    .then((result) => {
+      const totalGoals = result[0]?.totalGoals || 0;
+      res.status(200).json({ league, team, totalGoals });
+    })
+    .catch((err) => {
+      console.error("Error al obtener los goles del equipo:", err);
+      res.status(500).json({
+        message: "Error al obtener los goles del equipo",
+        error: err,
+      });
+    });
+};
+
+
 exports.getData = (req, res) => {
   model
     .find()
@@ -366,7 +411,7 @@ exports.fillData = async (req, res) => {
 };
 
 exports.getGoalsByYear = async (req, res) => {
-  const { league } = req.params;
+  const { yearInicial, yearFinal, league } = req.params;
   console.log("Liga recibida:", league);
 
   try {
