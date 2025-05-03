@@ -32,6 +32,8 @@ router.get(`/${path}/matchTeam/:league/:yearInicial/:yearFinal/:team`, controlle
 
 router.get(`/${path}/goalsByYear/:yearInicial/:yearFinal/:league`, controllerDB.getGoalsByYear);
 
+router.get(`/${path}/goalsByYearTeam/:yearInicial/:yearFinal/:league/:team`, controllerDB.getGoalsByYearTeam);
+
 //Metodos delete
 
 router.delete(`/${path}/delete/:league/:year`, controllerDB.deleteMatches);
