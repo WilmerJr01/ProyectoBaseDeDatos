@@ -12,35 +12,73 @@ function Equipos() {
   const [selectedEquipo, setSelectedEquipo] = useState(null);
 
   useEffect(() => {
-    console.log("Cargando ligas desde el backend...");
     axios
       .get("http://localhost:3000/database/competitions")
       .then((response) => {
-        const opciones = response.data.map((liga) => ({
-          value: liga.name,
-          label: liga.name,
+        const formateadas = response.data.map((nombre) => ({
+          value: nombre, // Usamos el nombre directamente
+          label: interceptorCompetition(nombre), // Solo modificamos la etiqueta que se mostrará
         }));
-        
-        setLigas(opciones);
+        setLigas(formateadas);
       })
-      .catch((err) => console.error("Error al cargar ligas", err));
+      .catch((error) => {
+        console.error("Error al obtener competencias:", error);
+      });
   }, []);
 
   useEffect(() => {
     if (!selectedLiga) return;
     axios
-      .get(`http://localhost:3000/database/teams/${selectedLiga}/0`)
+      .get(`http://localhost:3000/database/team/${selectedLiga}/0`)
       .then((response) => {
         const opcionesEquipos = response.data.map((nombre) => ({
           value: nombre,
           label: nombre,
         }));
-        setEquipos(opcionesEquipos);
+        setEquipos(opcionesEquipos); // Configurar correctamente el estado
+        console.log("Equipos:", opcionesEquipos);
       })
       .catch((err) => console.error("Error al cargar equipos", err));
   }, [selectedLiga]);
 
-  const customStyles = { /* puedes reutilizar el objeto customStyles que ya tienes */ };
+  const customStyles = {
+    control: (provided) => ({
+      ...provided,
+      backgroundColor: "transparent",
+      border: "none",
+      borderBottom: "2px solid white",
+      borderRadius: 0,
+      boxShadow: "none",
+      minHeight: "30px",
+      fontSize: "15px",
+      color: "white",
+      width: "300px",
+    }),
+    menu: (provided) => ({
+      ...provided,
+      backgroundColor: "transparent",
+    }),
+    menuList: (provided) => ({
+      ...provided,
+      backgroundColor: "transparent",
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isFocused ? "rgb(83, 79, 79)" : "#151219",
+      color: "white",
+      cursor: "pointer",
+    }),
+    singleValue: (provided) => ({
+      ...provided,
+      color: "white",
+    }),
+    dropdownIndicator: (provided) => ({
+      ...provided,
+      color: "white",
+      padding: "2px",
+    }),
+    indicatorSeparator: () => ({ display: "none" }),
+  };
 
   return (
     <main className="competencias-main">
