@@ -5,7 +5,7 @@ import { interceptorCompetition } from "../../functions/functions"; // Ajusta la
 import { interceptorCompetitionCountry } from "../../functions/functions";
 
 function EquiposInfo({ liga }) {
-  const { name, totalGoals, totalMatches, firstSeason } = liga;
+  const { name, totalGoals, totalMatches, firstDate } = liga;
 
   return (
     <motion.div
@@ -33,7 +33,7 @@ function EquiposInfo({ liga }) {
         </div>
         <div className="stat-separator" />
         <div className="stat-item">
-          <span className="stat-value">{firstSeason}</span>
+          <span className="stat-value">{firstDate}</span>
           <span className="stat-label">Primera fecha</span>
         </div>
       </div>
