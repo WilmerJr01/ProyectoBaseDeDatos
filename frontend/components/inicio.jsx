@@ -1,43 +1,82 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { formDate } from "../functions/functions.js";
+import {
+    interceptorCompetition,
+    interceptorCompetitionCountry,
+} from "../functions/functions.js";
 import MapaMundi from "./Inicio/MapaMundi.jsx";
+import CompeticionLogos from "./Inicio/CompetitionLogo.jsx";
+import "../styles/Inicio.css";
+
+// No olvides que este objeto también lo necesitas
+const leagueToCountry = {
+    argentina: "Argentina",
+    brazil: "Brazil",
+    colombia: "Colombia",
+    ecuador: "Ecuador",
+    england: "United Kingdom",
+    france: "France",
+    germany: "Germany",
+    italy: "Italy",
+    netherlands: "Netherlands",
+    portugal: "Portugal",
+    spain: "Spain",
+    uruguay: "Uruguay",
+};
 
 function Inicio() {
-    const [partidos, setPartidos] = useState([]);
+    const [competitions, setCompetitions] = useState([]);
+    const [paisSeleccionado, setPaisSeleccionado] = useState(null);
 
     useEffect(() => {
         axios
-            .get("http://localhost:3000/database/last")
-            .then((response) => {
-                setPartidos(response.data);
-            })
-            .catch((error) => {
-                console.error("Error al obtener los partidos:", error);
-            });
+            .get("http://localhost:3000/database/competitions")
+            .then((res) => setCompetitions(res.data))
+            .catch((err) =>
+                console.error("Error al obtener competiciones:", err)
+            );
     }, []);
 
+    // Función para obtener la información de la liga por país
+    const getInfoLigaPorPais = () => {
+        if (!paisSeleccionado) return null;
+        return (
+            competitions.find(
+                (c) =>
+                    leagueToCountry[c.league?.toLowerCase()] === paisSeleccionado
+            ) || null
+        );
+    };
+
+    const info = getInfoLigaPorPais();
+    const nombreLiga = info
+        ? interceptorCompetition(info.league)
+        : "Nombre de la Liga";
+    const paisOContinente = info
+        ? interceptorCompetitionCountry(info.league)
+        : "Continente";
+
     return (
-        <main>
-            <div className="hero">
-                <h1>Bienvenido a la App de Fútbol</h1>
-                <p>
-                    Tu fuente de información sobre competiciones y partidos en
-                    directo.
-                </p>
+        <main className="inicio">
+            <div className="logos">
+                <CompeticionLogos competitions={competitions} />
             </div>
-            <div className="content">
-                <h2>Últimos Partidos</h2>
-                <ul className="match-list">
-                    {partidos.map((partido, index) => (
-                        <li key={index} className="match-item">
-                            <p>Fecha {formDate(partido.date)}</p>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-            <div className="mapa">
-                <MapaMundi />
+
+            <div className="contenido">
+                <div className="panel-izquierdo">
+                    <h2>{nombreLiga}</h2>
+                    <p>{paisOContinente}</p>
+                    {paisSeleccionado && (
+                        <p><strong>País seleccionado: {paisSeleccionado}</strong></p>
+                    )}
+                </div>
+
+                <div className="panel-derecho">
+                    <MapaMundi
+                        competitions={competitions}
+                        onCountrySelect={setPaisSeleccionado}
+                    />
+                </div>
             </div>
         </main>
     );

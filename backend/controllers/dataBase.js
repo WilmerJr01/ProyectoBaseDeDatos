@@ -216,31 +216,34 @@ exports.getGoal = async (req, res) => {
 exports.getGoalByTeam = (req, res) => {
   const { league, team } = req.params;
 
-  model
-    .aggregate([
-      {
-        $match: {
-          competition: league,
-          $or: [{ teamHome: team }, { teamAway: team }],
-        },
+  model.aggregate([
+    {
+      $match: {
+        competition: league,
+        $or: [{ teamHome: team }, { teamAway: team }],
       },
-      {
-        $group: {
-          _id: null,
-          totalGoals: {
-            $sum: {
-              $cond: [
-                { $eq: ["$teamHome", team] },
-                "$goalsHome",
-                {
-                  $cond: [{ $eq: ["$teamAway", team] }, "$goalsAway", 0],
-                },
-              ],
-            },
-          },
-        },
-      },
-    ])
+    },
+    {
+      $group: {
+        _id: null,
+        totalGoals: {
+          $sum: {
+            $cond: [
+              { $eq: ["$teamHome", team] },
+              "$goalsHome",
+              {
+                $cond: [
+                  { $eq: ["$teamAway", team] },
+                  "$goalsAway",
+                  0
+                ]
+              }
+            ]
+          }
+        }
+      }
+    }
+  ])
     .then((result) => {
       const totalGoals = result[0]?.totalGoals || 0;
       res.status(200).json({ league, team, totalGoals });
@@ -253,6 +256,7 @@ exports.getGoalByTeam = (req, res) => {
       });
     });
 };
+
 
 exports.getData = (req, res) => {
   model
@@ -411,26 +415,11 @@ exports.getGoalsByYear = async (req, res) => {
   console.log("Liga recibida:", league);
 
   try {
-    // Si no se proporcionan años o son "0", no aplicar filtro de fechas
-    const startDate =
-      yearInicial && yearInicial !== "0"
-        ? parseInt(`${yearInicial}0101`, 10)
-        : null;
-    const endDate =
-      yearFinal && yearFinal !== "0" ? parseInt(`${yearFinal}1231`, 10) : null;
-
-    // Crear el filtro condicional para el rango de fechas
-    const matchStage = { competition: league };
-    if (startDate || endDate) {
-      const dateFilter = {};
-      if (startDate) dateFilter.$gte = startDate;
-      if (endDate) dateFilter.$lte = endDate;
-      matchStage.date = dateFilter;
-    }
-
     const result = await model.aggregate([
       {
-        $match: matchStage, // Aplicar el filtro condicional
+        $match: {
+          competition: league,
+        },
       },
       {
         $group: {
@@ -456,7 +445,9 @@ exports.getGoalsByYear = async (req, res) => {
     ]);
 
     const years = result.map((item) => item.year);
+    console.log("Años:", years);
     const goals = result.map((item) => item.totalGoals);
+    console.log("Goles por año:", goals);
 
     res.status(200).json({ years, goals });
   } catch (error) {
@@ -465,13 +456,87 @@ exports.getGoalsByYear = async (req, res) => {
   }
 };
 
+exports.getGoalsByYearTeam = async (req, res) => {
+  const { league, team, yearInicial, yearFinal } = req.params;
+  console.log("Liga recibida:", league);
+  console.log("Equipo recibido:", team);
+
+  // Determinar el rango de años
+  const startYear = yearInicial ? parseInt(yearInicial) : 0;
+  const endYear = yearFinal ? parseInt(yearFinal) : new Date().getFullYear();
+
+  try {
+    const result = await model.aggregate([
+      {
+        $match: {
+          competition: league,
+          $or: [
+            { teamHome: team },
+            { teamAway: team },
+          ],
+        },
+      },
+      {
+        $addFields: {
+          year: { $substr: [{ $toString: "$date" }, 0, 4] },
+          goles: {
+            $switch: {
+              branches: [
+                {
+                  case: { $eq: ["$teamHome", team] },
+                  then: "$goalsHome",
+                },
+                {
+                  case: { $eq: ["$teamAway", team] },
+                  then: "$goalsAway",
+                },
+              ],
+              default: 0,
+            },
+          },
+        },
+      },
+      {
+        $match: {
+          year: { $gte: startYear.toString(), $lte: endYear.toString() },
+        },
+      },
+      {
+        $group: {
+          _id: "$year",
+          totalGoals: { $sum: "$goles" },
+        },
+      },
+      {
+        $project: {
+          year: "$_id",
+          totalGoals: 1,
+          _id: 0,
+        },
+      },
+      {
+        $sort: { year: 1 },
+      },
+    ]);
+    console.log("Resultados de la agregación:", result);
+
+    const years = result.map((item) => item.year);
+    const goals = result.map((item) => item.totalGoals);
+
+    res.status(200).json({ years, goals });
+  } catch (error) {
+    console.error("Error al obtener los goles por año del equipo:", error.message);
+    res.status(500).json({ error: "No se pudieron obtener los goles por año del equipo" });
+  }
+};
+
+
 exports.getMatchTeam = (req, res) => {
   const { league, yearInicial, yearFinal, team } = req.params;
 
   const fechaInicio = parseInt(`${yearInicial}0101`);
 
-  const finalYear =
-    yearFinal === "0" ? new Date().getFullYear() : parseInt(yearFinal);
+  const finalYear = yearFinal === "0" ? new Date().getFullYear() : parseInt(yearFinal);
   const fechaFin = parseInt(`${finalYear}1231`);
 
   model
