@@ -456,6 +456,81 @@ exports.getGoalsByYear = async (req, res) => {
   }
 };
 
+exports.getGoalsByYearTeam = async (req, res) => {
+  const { league, team, yearInicial, yearFinal } = req.params;
+  console.log("Liga recibida:", league);
+  console.log("Equipo recibido:", team);
+
+  // Determinar el rango de años
+  const startYear = yearInicial ? parseInt(yearInicial) : 0;
+  const endYear = yearFinal ? parseInt(yearFinal) : new Date().getFullYear();
+
+  try {
+    const result = await model.aggregate([
+      {
+        $match: {
+          competition: league,
+          $or: [
+            { teamHome: team },
+            { teamAway: team },
+          ],
+        },
+      },
+      {
+        $addFields: {
+          year: { $substr: [{ $toString: "$date" }, 0, 4] },
+          goles: {
+            $switch: {
+              branches: [
+                {
+                  case: { $eq: ["$teamHome", team] },
+                  then: "$goalsHome",
+                },
+                {
+                  case: { $eq: ["$teamAway", team] },
+                  then: "$goalsAway",
+                },
+              ],
+              default: 0,
+            },
+          },
+        },
+      },
+      {
+        $match: {
+          year: { $gte: startYear.toString(), $lte: endYear.toString() },
+        },
+      },
+      {
+        $group: {
+          _id: "$year",
+          totalGoals: { $sum: "$goles" },
+        },
+      },
+      {
+        $project: {
+          year: "$_id",
+          totalGoals: 1,
+          _id: 0,
+        },
+      },
+      {
+        $sort: { year: 1 },
+      },
+    ]);
+    console.log("Resultados de la agregación:", result);
+
+    const years = result.map((item) => item.year);
+    const goals = result.map((item) => item.totalGoals);
+
+    res.status(200).json({ years, goals });
+  } catch (error) {
+    console.error("Error al obtener los goles por año del equipo:", error.message);
+    res.status(500).json({ error: "No se pudieron obtener los goles por año del equipo" });
+  }
+};
+
+
 exports.getMatchTeam = (req, res) => {
   const { league, yearInicial, yearFinal, team } = req.params;
 

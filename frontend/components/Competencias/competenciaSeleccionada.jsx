@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Bar } from "react-chartjs-2"; // Importar el componente de gráfica
+import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -10,10 +10,9 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import liga from "../../functions/liga.js"; // Ajusta la ruta si es necesario
-import CompetitionInfo from "./CompetitionInfo.jsx"; // Ajusta la ruta a donde guardaste CompetitionInfo.jsx
+import liga from "../../functions/liga.js";
+import CompetitionInfo from "./CompetitionInfo.jsx";
 
-// Registrar los componentes de Chart.js
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -28,8 +27,10 @@ function CompetenciaSeleccionada({ competencia }) {
   const [totalGoles, setTotalGoles] = useState(null);
   const [primerAnio, setPrimerAnio] = useState(null);
   const [totalPartidos, setTotalPartidos] = useState(null);
-  const [golesPorTemporada, setGolesPorTemporada] = useState([]); // Datos de goles por temporada
-  const [anios, setAnios] = useState([]); // Años correspondientes
+  const [golesPorTemporada, setGolesPorTemporada] = useState([]);
+  const [anios, setAnios] = useState([]);
+  const [anioInicio, setAnioInicio] = useState("");
+  const [anioFinal, setAnioFinal] = useState("");
 
   useEffect(() => {
     if (!competencia) return;
@@ -67,20 +68,28 @@ function CompetenciaSeleccionada({ competencia }) {
         liga.primerAnio = primerAnio;
       })
       .catch((err) => console.error("Error partidos:", err));
+  }, [competencia]);
+
+  useEffect(() => {
+    if (!competencia) return;
+
+    // Determinar la URL según si se ingresaron fechas o no
+    const url =
+      anioInicio && anioFinal
+        ? `http://localhost:3000/database/goalsByYear/${anioInicio}/${anioFinal}/${competencia}`
+        : `http://localhost:3000/database/goalsByYear/0/0/${competencia}`; // Sin fechas, obtener todos los datos históricos
 
     // Fetch de goles por temporada
     axios
-      .get(`http://localhost:3000/database/goalsByYear/${competencia}`)
+      .get(url)
       .then((res) => {
         const { years, goals } = res.data;
-        setAnios(years); // Guardar los años
+        setAnios(years);
         setGolesPorTemporada(goals);
-        console.log("años:", years);
-        console.log("goals:", goals);
         liga.golesPorTemporada = goals;
       })
       .catch((err) => console.error("Error goles por temporada:", err));
-  }, [competencia]);
+  }, [competencia, anioInicio, anioFinal]);
 
   if (!competencia) {
     return (
@@ -92,13 +101,13 @@ function CompetenciaSeleccionada({ competencia }) {
 
   // Configuración de los datos para la gráfica
   const data = {
-    labels: anios, // Años como etiquetas
+    labels: anios,
     datasets: [
       {
-        label: "Goles por temporada",
-        data: golesPorTemporada, // Goles por temporada
-        backgroundColor: "rgba(75, 192, 192, 0.6)", // Color de las barras
-        borderColor: "rgba(75, 192, 192, 1)", // Color del borde
+        label: "Goles por Año",
+        data: golesPorTemporada,
+        backgroundColor: "rgba(75, 192, 192, 0.6)",
+        borderColor: "rgba(75, 192, 192, 1)",
         borderWidth: 1,
       },
     ],
@@ -112,14 +121,13 @@ function CompetenciaSeleccionada({ competencia }) {
       },
       title: {
         display: true,
-        text: `Goles por temporada en ${competencia}`,
+        text: `Goles por Año en ${competencia}`,
       },
     },
   };
 
   return (
     <div style={{ color: "white" }}>
-      {/* Componente de información de la competencia */}
       <CompetitionInfo
         liga={{
           name: competencia,
@@ -129,6 +137,29 @@ function CompetenciaSeleccionada({ competencia }) {
         }}
       />
 
+      {/* Selectores de rango de años */}
+      <div style={{ marginTop: "20px" }}>
+        <label htmlFor="anioInicio" style={{ marginRight: "10px" }}>
+          Año de Inicio:
+        </label>
+        <input
+          type="number"
+          id="anioInicio"
+          value={anioInicio}
+          onChange={(e) => setAnioInicio(e.target.value)}
+          style={{ marginRight: "20px" }}
+        />
+        <label htmlFor="anioFinal" style={{ marginRight: "10px" }}>
+          Año Final:
+        </label>
+        <input
+          type="number"
+          id="anioFinal"
+          value={anioFinal}
+          onChange={(e) => setAnioFinal(e.target.value)}
+        />
+      </div>
+
       {/* Contenedor para la gráfica */}
       <div
         id="chart-container"
@@ -136,7 +167,6 @@ function CompetenciaSeleccionada({ competencia }) {
       >
         <h3>Gráfica de datos</h3>
         <div style={{ width: "80%", margin: "0 auto", height: "400px" }}>
-          {/* Renderizar la gráfica */}
           <Bar data={data} options={options} />
         </div>
       </div>
