@@ -18,7 +18,7 @@ function Header() {
             <Link to="/competencias" onMouseEnter={() => { setMouseIn('competencias') }} onMouseLeave={() => { setMouseIn('') }}>Competencias</Link>
           </li>
           <li className="nav-item">
-            <Link to="/partidos" onMouseEnter={() => { setMouseIn('partidos') }} onMouseLeave={() => { setMouseIn('') }}>Partidos</Link>
+            <Link to="/enfrentamientos" onMouseEnter={() => { setMouseIn('enfrentamientos') }} onMouseLeave={() => { setMouseIn('') }}>Enfrentamientos</Link>
           </li>
           <li className="nav-item">
             <Link to="equipos" onMouseEnter={() => { setMouseIn('equipos') }} onMouseLeave={() => { setMouseIn('') }}>Equipos</Link>
