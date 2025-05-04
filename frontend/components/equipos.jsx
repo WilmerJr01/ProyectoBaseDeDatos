@@ -82,7 +82,7 @@ function Equipos() {
 
   return (
     <main className="competencias-main">
-      <label style={{ color: "white" }}>Selecciona una liga:</label>
+      <label style={{ color: "white" }}>Selecciona una competencia:</label>
       <div className="competencias-select">
         <Select
           options={ligas}
@@ -92,7 +92,7 @@ function Equipos() {
             setSelectedEquipo(null);
           }}
           styles={customStyles}
-          placeholder="-- Selecciona una liga --"
+          placeholder="-- Selecciona una competencia --"
           isClearable
         />
       </div>

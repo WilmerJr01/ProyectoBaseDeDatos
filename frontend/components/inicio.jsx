@@ -64,7 +64,7 @@ function Inicio() {
 
             <div className="contenido">
                 <div className="panel-izquierdo">
-                    <h2>{nombreLiga}</h2>
+                    <h2>{paisSeleccionado}</h2>
                     <p>{paisOContinente}</p>
                     {paisSeleccionado && (
                         <p><strong>País seleccionado: {paisSeleccionado}</strong></p>

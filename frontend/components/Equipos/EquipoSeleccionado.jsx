@@ -112,7 +112,13 @@ function EquipoSeleccionado({ equipo, liga }) {
 
   if (!equipo) {
     return (
-      <h2 style={{ color: "white" }}>No se ha seleccionado ningún equipo</h2>
+      <section className="cargando">
+        <h2 style={{ color: "white" }}>
+          No se ha seleccionado ningún equipo
+        </h2>
+
+        <img src="../../assets/mascotaPensando.png" alt="" />
+      </section>
     );
   }
 

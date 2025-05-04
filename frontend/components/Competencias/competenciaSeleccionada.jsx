@@ -119,9 +119,13 @@ function CompetenciaSeleccionada({ competencia }) {
 
   if (!competencia) {
     return (
-      <h2 style={{ color: "white" }}>
-        No se ha seleccionado ninguna competencia
-      </h2>
+      <section className="cargando">
+        <h2 style={{ color: "white" }}>
+          No se ha seleccionado ninguna competencia
+        </h2>
+
+        <img src="../../assets/mascotaPensando.png" alt="" />
+      </section>
     );
   }
 
@@ -181,147 +185,161 @@ function CompetenciaSeleccionada({ competencia }) {
 
   // ... Todo el código anterior permanece igual ...
 
-return (
-  <div style={{ color: "white" }}>
-    <CompetitionInfo
-      liga={{
-        name: competencia,
-        totalGoals: totalGoles || 0,
-        totalMatches: totalPartidos || 0,
-        firstSeason: primerAnio || "-",
-      }}
-    />
+  return (
+    <div style={{ color: "white" }}>
+      <CompetitionInfo
+        liga={{
+          name: competencia,
+          totalGoals: totalGoles || 0,
+          totalMatches: totalPartidos || 0,
+          firstSeason: primerAnio || "-",
+        }}
+      />
 
-    {/* CONTENEDOR CENTRAL GENERAL */}
-    <div
-  style={{
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center", // Centrado horizontal
-    width: "100%",
-    marginTop: "60px", // Más espacio respecto a la tarjeta
-  }}
->
-      {/* Selectores de rango de años para goles */}
-      <div style={{ marginBottom: "30px" }}>
-        <label htmlFor="anioInicio" style={{ marginRight: "10px", color: "white" }}>
-          Año de Inicio (Goles):
-        </label>
-        <input
-          type="number"
-          id="anioInicio"
-          value={anioInicio}
-          onChange={(e) => setAnioInicio(e.target.value)}
+      {/* CONTENEDOR CENTRAL GENERAL */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center", // Centrado horizontal
+          width: "100%",
+          marginTop: "60px", // Más espacio respecto a la tarjeta
+        }}
+      >
+        {/* Selectores de rango de años para goles */}
+        <div style={{ marginBottom: "30px" }}>
+          <label
+            htmlFor="anioInicio"
+            style={{ marginRight: "10px", color: "white" }}
+          >
+            Año de Inicio (Goles):
+          </label>
+          <input
+            type="number"
+            id="anioInicio"
+            value={anioInicio}
+            onChange={(e) => setAnioInicio(e.target.value)}
+            style={{
+              marginRight: "20px",
+              backgroundColor: "transparent",
+              border: "none",
+              borderBottom: "1px solid white",
+              color: "white",
+              outline: "none",
+            }}
+          />
+          <label
+            htmlFor="anioFinal"
+            style={{ marginRight: "10px", color: "white" }}
+          >
+            Año Final (Goles):
+          </label>
+          <input
+            type="number"
+            id="anioFinal"
+            value={anioFinal}
+            onChange={(e) => setAnioFinal(e.target.value)}
+            style={{
+              backgroundColor: "transparent",
+              border: "none",
+              borderBottom: "1px solid white",
+              color: "white",
+              outline: "none",
+            }}
+          />
+        </div>
+
+        {/* Gráfica de Goles */}
+        <div
+          id="chart-container-goles"
           style={{
-            marginRight: "20px",
-            backgroundColor: "transparent",
-            border: "none",
-            borderBottom: "1px solid white",
-            color: "white",
-            outline: "none",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            width: "100%",
           }}
-        />
-        <label htmlFor="anioFinal" style={{ marginRight: "10px", color: "white" }}>
-          Año Final (Goles):
-        </label>
-        <input
-          type="number"
-          id="anioFinal"
-          value={anioFinal}
-          onChange={(e) => setAnioFinal(e.target.value)}
+        >
+          <h3 style={{ color: "white", textAlign: "center" }}>
+            Gráfica de Goles
+          </h3>
+          <div style={{ width: "60%", maxWidth: "800px", height: "400px" }}>
+            <Bar data={dataGoles} options={optionsGoles} />
+          </div>
+        </div>
+
+        {/* Selectores de rango de años para partidos */}
+
+        <div
           style={{
-            backgroundColor: "transparent",
-            border: "none",
-            borderBottom: "1px solid white",
-            color: "white",
-            outline: "none",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center", // Centrado horizontal
+            width: "100%",
+            marginTop: "100px", // Más espacio respecto a la tarjeta
           }}
-        />
+        ></div>
+        <div style={{ marginBottom: "20px" }}>
+          <label
+            htmlFor="anioInicioPartidos"
+            style={{ marginRight: "10px", color: "white" }}
+          >
+            Año de Inicio (Partidos):
+          </label>
+          <input
+            type="number"
+            id="anioInicioPartidos"
+            value={anioInicioPartidos}
+            onChange={(e) => setAnioInicioPartidos(e.target.value)}
+            style={{
+              marginRight: "20px",
+              backgroundColor: "transparent",
+              border: "none",
+              borderBottom: "1px solid white",
+              color: "white",
+              outline: "none",
+            }}
+          />
+          <label
+            htmlFor="anioFinalPartidos"
+            style={{ marginRight: "10px", color: "white" }}
+          >
+            Año Final (Partidos):
+          </label>
+          <input
+            type="number"
+            id="anioFinalPartidos"
+            value={anioFinalPartidos}
+            onChange={(e) => setAnioFinalPartidos(e.target.value)}
+            style={{
+              backgroundColor: "transparent",
+              border: "none",
+              borderBottom: "1px solid white",
+              color: "white",
+              outline: "none",
+            }}
+          />
+        </div>
+
+        {/* Gráfica de Partidos */}
+        <div
+          id="chart-container-partidos"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            width: "100%",
+          }}
+        >
+          <h3 style={{ color: "white", textAlign: "center" }}>
+            Gráfica de Partidos
+          </h3>
+          <div style={{ width: "60%", maxWidth: "800px", height: "400px" }}>
+            <Bar data={dataPartidos} options={optionsPartidos} />
+          </div>
+        </div>
       </div>
-
-      {/* Gráfica de Goles */}
-      <div
-    id="chart-container-goles"
-    style={{
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      width: "100%",
-    }}
-  >
-    <h3 style={{ color: "white", textAlign: "center" }}>Gráfica de Goles</h3>
-    <div style={{ width: "60%", maxWidth: "800px", height: "400px" }}>
-      <Bar data={dataGoles} options={optionsGoles} />
     </div>
-  </div>
-
-
-
-      {/* Selectores de rango de años para partidos */}
-
-      <div
-  style={{
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center", // Centrado horizontal
-    width: "100%",
-    marginTop: "100px", // Más espacio respecto a la tarjeta
-  }}
-></div>
-      <div style={{ marginBottom: "20px" }}>
-        <label htmlFor="anioInicioPartidos" style={{ marginRight: "10px", color: "white" }}>
-          Año de Inicio (Partidos):
-        </label>
-        <input
-          type="number"
-          id="anioInicioPartidos"
-          value={anioInicioPartidos}
-          onChange={(e) => setAnioInicioPartidos(e.target.value)}
-          style={{
-            marginRight: "20px",
-            backgroundColor: "transparent",
-            border: "none",
-            borderBottom: "1px solid white",
-            color: "white",
-            outline: "none",
-          }}
-        />
-        <label htmlFor="anioFinalPartidos" style={{ marginRight: "10px", color: "white" }}>
-          Año Final (Partidos):
-        </label>
-        <input
-          type="number"
-          id="anioFinalPartidos"
-          value={anioFinalPartidos}
-          onChange={(e) => setAnioFinalPartidos(e.target.value)}
-          style={{
-            backgroundColor: "transparent",
-            border: "none",
-            borderBottom: "1px solid white",
-            color: "white",
-            outline: "none",
-          }}
-        />
-      </div>
-
-      {/* Gráfica de Partidos */}
-      <div
-    id="chart-container-partidos"
-    style={{
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      width: "100%",
-    }}
-  >
-    <h3 style={{ color: "white", textAlign: "center" }}>Gráfica de Partidos</h3>
-    <div style={{ width: "60%", maxWidth: "800px", height: "400px" }}>
-      <Bar data={dataPartidos} options={optionsPartidos} />
-    </div>
-  </div>
-    </div>
-  </div>
-);
+  );
 }
 
 export default CompetenciaSeleccionada;

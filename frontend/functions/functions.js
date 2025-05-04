@@ -68,5 +68,7 @@ export function interceptorCompetitionCountry(competition) {
             return "Ecuador";
         case "Fifa Club":
             return "Mundo"
+        case "UEFA CL":
+            return "Europa";
     }
 }
