@@ -28,6 +28,12 @@ function EquipoSeleccionado({ equipo, liga }) {
   const [anioInicio, setAnioInicio] = useState("");
   const [anioFinal, setAnioFinal] = useState("");
 
+  // Estados para la nueva gráfica
+  const [partidosPorAnio, setPartidosPorAnio] = useState([]);
+  const [aniosPartidos, setAniosPartidos] = useState([]);
+  const [anioInicioPartidos, setAnioInicioPartidos] = useState("");
+  const [anioFinalPartidos, setAnioFinalPartidos] = useState("");
+
   useEffect(() => {
     if (!equipo || !liga) return;
 
@@ -64,7 +70,7 @@ function EquipoSeleccionado({ equipo, liga }) {
 
     // Determinar la URL según si se ingresaron fechas o no
     const url =
-      anioInicio && anioFinal
+      anioInicio.trim() !== "" && anioFinal.trim() !== ""
         ? `http://localhost:3000/database/goalsByYearTeam/${anioInicio}/${anioFinal}/${liga}/${equipo}`
         : `http://localhost:3000/database/goalsByYearTeam/0/0/${liga}/${equipo}`; // Sin fechas, obtener todos los datos históricos
 
@@ -81,14 +87,37 @@ function EquipoSeleccionado({ equipo, liga }) {
       );
   }, [equipo, liga, anioInicio, anioFinal]);
 
+  // Nueva lógica para la gráfica de partidos por año
+  useEffect(() => {
+    if (!equipo || !liga) return;
+
+    // Determinar la URL según si se ingresaron fechas o no
+    const url =
+      anioInicioPartidos.trim() !== "" && anioFinalPartidos.trim() !== ""
+        ? `http://localhost:3000/database/matchByYearTeam/${anioInicioPartidos}/${anioFinalPartidos}/${liga}/${equipo}`
+        : `http://localhost:3000/database/matchByYearTeam/0/0/${liga}/${equipo}`; // Sin fechas, obtener todos los datos históricos
+
+    // Fetch de partidos por temporada
+    axios
+      .get(url)
+      .then((res) => {
+        const { years, matches } = res.data;
+        setAniosPartidos(years);
+        setPartidosPorAnio(matches);
+      })
+      .catch((err) =>
+        console.error("Error partidos por temporada del equipo:", err)
+      );
+  }, [equipo, liga, anioInicioPartidos, anioFinalPartidos]);
+
   if (!equipo) {
     return (
       <h2 style={{ color: "white" }}>No se ha seleccionado ningún equipo</h2>
     );
   }
 
-  // Configuración de los datos para la gráfica
-  const data = {
+  // Configuración de los datos para la gráfica de goles
+  const dataGoles = {
     labels: anios,
     datasets: [
       {
@@ -101,7 +130,7 @@ function EquipoSeleccionado({ equipo, liga }) {
     ],
   };
 
-  const options = {
+  const optionsGoles = {
     responsive: true,
     plugins: {
       legend: {
@@ -114,14 +143,41 @@ function EquipoSeleccionado({ equipo, liga }) {
     },
   };
 
+  // Configuración de los datos para la gráfica de partidos
+  const dataPartidos = {
+    labels: aniosPartidos,
+    datasets: [
+      {
+        label: "Partidos por Año",
+        data: partidosPorAnio,
+        backgroundColor: "rgba(255, 99, 132, 0.6)",
+        borderColor: "rgba(255, 99, 132, 1)",
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const optionsPartidos = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top",
+      },
+      title: {
+        display: true,
+        text: `Partidos por Año de ${equipo} en ${liga}`,
+      },
+    },
+  };
+
   return (
     <div style={{ color: "white" }}>
       {info ? <EquiposInfo liga={info} /> : <p>Cargando datos...</p>}
 
-      {/* Selectores de rango de años */}
+      {/* Selectores de rango de años para goles */}
       <div style={{ marginTop: "20px" }}>
         <label htmlFor="anioInicio" style={{ marginRight: "10px" }}>
-          Año de Inicio:
+          Año de Inicio (Goles):
         </label>
         <input
           type="number"
@@ -131,7 +187,7 @@ function EquipoSeleccionado({ equipo, liga }) {
           style={{ marginRight: "20px" }}
         />
         <label htmlFor="anioFinal" style={{ marginRight: "10px" }}>
-          Año Final:
+          Año Final (Goles):
         </label>
         <input
           type="number"
@@ -141,14 +197,48 @@ function EquipoSeleccionado({ equipo, liga }) {
         />
       </div>
 
-      {/* Contenedor para la gráfica */}
+      {/* Contenedor para la gráfica de goles */}
       <div
-        id="chart-container"
+        id="chart-container-goles"
         style={{ marginTop: "20px", textAlign: "center" }}
       >
-        <h3>Gráfica de datos</h3>
+        <h3>Gráfica de Goles</h3>
         <div style={{ width: "80%", margin: "0 auto", height: "400px" }}>
-          <Bar data={data} options={options} />
+          <Bar data={dataGoles} options={optionsGoles} />
+        </div>
+      </div>
+
+      {/* Selectores de rango de años para partidos */}
+      <div style={{ marginTop: "20px" }}>
+        <label htmlFor="anioInicioPartidos" style={{ marginRight: "10px" }}>
+          Año de Inicio (Partidos):
+        </label>
+        <input
+          type="number"
+          id="anioInicioPartidos"
+          value={anioInicioPartidos}
+          onChange={(e) => setAnioInicioPartidos(e.target.value)}
+          style={{ marginRight: "20px" }}
+        />
+        <label htmlFor="anioFinalPartidos" style={{ marginRight: "10px" }}>
+          Año Final (Partidos):
+        </label>
+        <input
+          type="number"
+          id="anioFinalPartidos"
+          value={anioFinalPartidos}
+          onChange={(e) => setAnioFinalPartidos(e.target.value)}
+        />
+      </div>
+
+      {/* Contenedor para la gráfica de partidos */}
+      <div
+        id="chart-container-partidos"
+        style={{ marginTop: "20px", textAlign: "center" }}
+      >
+        <h3>Gráfica de Partidos</h3>
+        <div style={{ width: "80%", margin: "0 auto", height: "400px" }}>
+          <Bar data={dataPartidos} options={optionsPartidos} />
         </div>
       </div>
     </div>
