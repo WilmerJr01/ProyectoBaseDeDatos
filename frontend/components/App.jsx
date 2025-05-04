@@ -4,7 +4,7 @@ import "../styles/App.css";
 //Componentes 
 import Header from "./header.jsx";
 import Inicio from "./inicio.jsx"; 
-import Partidos from "./partidos.jsx";
+import Enfrentamientos from "./Enfrentamientos.jsx";
 import Competencias from "./competencias.jsx";
 import Equipos from "./equipos.jsx";
 import SobreNosotros from "./SobreNosotros.jsx";
@@ -15,7 +15,7 @@ function App() {
       <Header />
       <Routes>
         <Route path="/" element={ <Inicio /> } />
-        <Route path="/partidos" element={<Partidos />} />
+        <Route path="/enfrentamientos" element={<Enfrentamientos />} />
         <Route path="/competencias" element={<Competencias />} />
         <Route path="/equipos" element={<Equipos />} />
         <Route path="/SobreNosotros" element={<SobreNosotros />} />
