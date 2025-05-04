@@ -14,8 +14,8 @@ function EquiposInfo({ liga }) {
       transition={{ duration: 0.5 }}
       className="competition-card"
     >
-      <h2 className="competition-title">{interceptorCompetition(name)}</h2>
-      
+      <h2 className="competition-title">{name}</h2>
+
       {/* Aquí añadimos la región/pais debajo del nombre */}
       <p className="competition-country">
         {interceptorCompetitionCountry(name)}

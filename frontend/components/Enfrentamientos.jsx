@@ -1,10 +1,10 @@
-function Partidos() {
+function Enfrentameintos() {
     return (
       <main>
-        <h1>Esta es la página de Partidos</h1>
+        <h1>Esta es la página de Enfrentameintos</h1>
       </main>
     );
   }
   
-  export default Partidos;
+  export default Enfrentameintos;
   

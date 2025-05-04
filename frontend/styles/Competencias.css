@@ -10,4 +10,18 @@
   .competencias-seleccion {
     color: white;
   }
+
+  .cargando {
+    color: white;
+    font-size: 20px;
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .cargando img {
+    width: 300px;
+    height: auto;
+    margin: 0 auto;
+    display: block;
+  }
   

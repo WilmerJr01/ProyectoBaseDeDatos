@@ -88,7 +88,7 @@ function Competencias() {
                     )} // Filtramos la opción seleccionada
                     onChange={handleChange}
                     styles={customStyles}
-                    placeholder="-- Selecciona una opción --"
+                    placeholder="-- Selecciona una competencia --"
                     isClearable
                 />
             </div>
