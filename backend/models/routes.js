@@ -34,7 +34,7 @@ router.get(`/${path}/goalsByYear/:yearInicial/:yearFinal/:league`, controllerDB.
 router.get(`/${path}/matchByYear/:yearInicial/:yearFinal/:league`, controllerDB.getmacthByYear);
 router.get(`/${path}/goalsByYearTeam/:yearInicial/:yearFinal/:league/:team`, controllerDB.getGoalsByYearTeam);
 router.get(`/${path}/matchByYearTeam/:yearInicial/:yearFinal/:league/:team`, controllerDB.getMatchByYearTeam);
-router.get(`/${path}/compareGoals/:league/:yearInicial/:yearFinal/:team1/:team2`,controllerDB.compareGoalsByYear);
+router.get(`/${path}/duelsGoals/:league/:team1/:team2/:yearInicial/:yearFinal`, controllerDB.getDuelsGoals);
 
 
 //Metodos delete

@@ -715,125 +715,84 @@ exports.getMatchTeam = (req, res) => {
       });
     });
 };
+exports.getDuelsGoals = async (req, res) => {
+  const { league, team1, team2, yearInicial, yearFinal } = req.params;
 
-const compareGoalsByYear = async (req, res) => {
-  const { league, yearInicial, yearFinal, team1, team2 } = req.params;
-
-  console.log("Parámetros recibidos:", {
-    league,
-    yearInicial,
-    yearFinal,
-    team1,
-    team2,
-  });
+  // Determinar el rango de años
+  const startYear =
+    yearInicial && yearInicial !== "0" ? parseInt(yearInicial) : 0;
+  const endYear =
+    yearFinal && yearFinal !== "0"
+      ? parseInt(yearFinal)
+      : new Date().getFullYear();
 
   try {
-    const startYear =
-      yearInicial && yearInicial !== "0" ? parseInt(yearInicial) : 0;
-    const endYear =
-      yearFinal && yearFinal !== "0"
-        ? parseInt(yearFinal)
-        : new Date().getFullYear();
-
-    const goalsTeam1 = await getGoalsByTeamAndYear(
-      league,
-      startYear,
-      endYear,
-      team1
-    );
-    const goalsTeam2 = await getGoalsByTeamAndYear(
-      league,
-      startYear,
-      endYear,
-      team2
-    );
-
-    console.log("Goles equipo 1:", goalsTeam1);
-    console.log("Goles equipo 2:", goalsTeam2);
-
-    const years = [
-      ...new Set([
-        ...goalsTeam1.map((g) => g.year),
-        ...goalsTeam2.map((g) => g.year),
-      ]),
-    ].sort();
-
-    const formattedGoalsTeam1 = years.map((year) => {
-      const goalData = goalsTeam1.find((g) => g.year === year);
-      return goalData ? goalData.totalGoals : 0;
-    });
-
-    const formattedGoalsTeam2 = years.map((year) => {
-      const goalData = goalsTeam2.find((g) => g.year === year);
-      return goalData ? goalData.totalGoals : 0;
-    });
-
-    res.status(200).json({
-      years,
-      goalsTeam1: formattedGoalsTeam1,
-      goalsTeam2: formattedGoalsTeam2,
-    });
-  } catch (error) {
-    console.error("Error al comparar los goles:", error.message);
-    res
-      .status(500)
-      .json({ error: "Error al comparar los goles", details: error.message });
-  }
-};
-
-// Función auxiliar para obtener los goles por equipo y año
-const getGoalsByTeamAndYear = async (league, startYear, endYear, team) => {
-  const matchStage = {
-    competition: league,
-    $or: [{ teamHome: team }, { teamAway: team }],
-  };
-
-  if (startYear || endYear) {
-    const dateFilter = {};
-    if (startYear) dateFilter.$gte = parseInt(`${startYear}0101`);
-    if (endYear) dateFilter.$lte = parseInt(`${endYear}1231`);
-    matchStage.date = dateFilter;
-  }
-
-  console.log("Filtro de consulta:", JSON.stringify(matchStage, null, 2));
-
-  const result = await model.aggregate([
-    { $match: matchStage },
-    {
-      $addFields: {
-        year: { $substr: [{ $toString: "$date" }, 0, 4] },
-        goles: {
-          $switch: {
-            branches: [
-              { case: { $eq: ["$teamHome", team] }, then: "$goalsHome" },
-              { case: { $eq: ["$teamAway", team] }, then: "$goalsAway" },
-            ],
-            default: 0,
+    const result = await model.aggregate([
+      {
+        $match: {
+          competition: league,
+          $or: [
+            { $and: [{ teamHome: team1 }, { teamAway: team2 }] },
+            { $and: [{ teamHome: team2 }, { teamAway: team1 }] },
+          ],
+        },
+      },
+      {
+        $addFields: {
+          year: { $substr: [{ $toString: "$date" }, 0, 4] },
+          goalsTeam1: {
+            $cond: [{ $eq: ["$teamHome", team1] }, "$goalsHome", "$goalsAway"],
+          },
+          goalsTeam2: {
+            $cond: [{ $eq: ["$teamHome", team2] }, "$goalsHome", "$goalsAway"],
           },
         },
       },
-    },
-    {
-      $group: {
-        _id: "$year",
-        totalGoals: { $sum: "$goles" },
+      {
+        $match: {
+          ...(startYear || endYear
+            ? {
+                year: {
+                  ...(startYear ? { $gte: startYear.toString() } : {}),
+                  ...(endYear ? { $lte: endYear.toString() } : {}),
+                },
+              }
+            : {}),
+        },
       },
-    },
-    {
-      $project: {
-        year: "$_id",
-        totalGoals: 1,
-        _id: 0,
+      {
+        $group: {
+          _id: "$year",
+          goalsTeam1: { $sum: "$goalsTeam1" },
+          goalsTeam2: { $sum: "$goalsTeam2" },
+        },
       },
-    },
-    { $sort: { year: 1 } },
-  ]);
+      {
+        $project: {
+          year: "$_id",
+          goalsTeam1: 1,
+          goalsTeam2: 1,
+          _id: 0,
+        },
+      },
+      {
+        $sort: { year: 1 },
+      },
+    ]);
 
-  console.log("Resultados de la consulta:", result);
-  return result;
-};
+    const years = result.map((item) => item.year);
+    console.log("Años:", years);
+    const goalsTeam1 = result.map((item) => item.goalsTeam1);
+    console.log("Goles equipo 1:", goalsTeam1);
 
-module.exports = {
-  ...exports,
-  compareGoalsByYear,
+    const goalsTeam2 = result.map((item) => item.goalsTeam2);
+    console.log("Goles equipo 2:", goalsTeam2);
+
+    res.status(200).json({ years, goalsTeam1, goalsTeam2 });
+  } catch (error) {
+    console.error("Error al obtener los goles de los duelos:", error.message);
+    res.status(500).json({
+      error: "No se pudieron obtener los goles de los duelos",
+    });
+  }
 };
