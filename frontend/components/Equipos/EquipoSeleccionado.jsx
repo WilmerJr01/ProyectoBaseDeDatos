@@ -174,9 +174,19 @@ function EquipoSeleccionado({ equipo, liga }) {
     <div style={{ color: "white" }}>
       {info ? <EquiposInfo liga={info} /> : <p>Cargando datos...</p>}
 
+    {/* CONTENEDOR CENTRAL GENERAL */}
+    <div
+  style={{
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center", // Centrado horizontal
+    width: "100%",
+    marginTop: "40px", // Más espacio respecto a la tarjeta
+  }}
+>
       {/* Selectores de rango de años para goles */}
-      <div style={{ marginTop: "20px" }}>
-        <label htmlFor="anioInicio" style={{ marginRight: "10px" }}>
+      <div style={{ marginBottom: "30px" }}>
+        <label htmlFor="anioInicio" style={{ marginRight: "10px", color: "white" }}>
           Año de Inicio (Goles):
         </label>
         <input
@@ -184,9 +194,16 @@ function EquipoSeleccionado({ equipo, liga }) {
           id="anioInicio"
           value={anioInicio}
           onChange={(e) => setAnioInicio(e.target.value)}
-          style={{ marginRight: "20px" }}
+          style={{
+            marginRight: "20px",
+            backgroundColor: "transparent",
+            border: "none",
+            borderBottom: "1px solid white",
+            color: "white",
+            outline: "none",
+          }}
         />
-        <label htmlFor="anioFinal" style={{ marginRight: "10px" }}>
+        <label htmlFor="anioFinal" style={{ marginRight: "10px", color: "white" }}>
           Año Final (Goles):
         </label>
         <input
@@ -194,23 +211,47 @@ function EquipoSeleccionado({ equipo, liga }) {
           id="anioFinal"
           value={anioFinal}
           onChange={(e) => setAnioFinal(e.target.value)}
+          style={{
+            backgroundColor: "transparent",
+            border: "none",
+            borderBottom: "1px solid white",
+            color: "white",
+            outline: "none",
+          }}
         />
       </div>
 
-      {/* Contenedor para la gráfica de goles */}
+      {/* Gráfica de Goles */}
       <div
-        id="chart-container-goles"
-        style={{ marginTop: "20px", textAlign: "center" }}
-      >
-        <h3>Gráfica de Goles</h3>
-        <div style={{ width: "80%", margin: "0 auto", height: "400px" }}>
-          <Bar data={dataGoles} options={optionsGoles} />
-        </div>
-      </div>
+    id="chart-container-goles"
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      width: "100%",
+    }}
+  >
+    <h3 style={{ color: "white", textAlign: "center" }}>Gráfica de Goles</h3>
+    <div style={{ width: "60%", maxWidth: "800px", height: "400px" }}>
+      <Bar data={dataGoles} options={optionsGoles} />
+    </div>
+  </div>
+
+
 
       {/* Selectores de rango de años para partidos */}
-      <div style={{ marginTop: "20px" }}>
-        <label htmlFor="anioInicioPartidos" style={{ marginRight: "10px" }}>
+
+      <div
+  style={{
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center", // Centrado horizontal
+    width: "100%",
+    marginTop: "40px", // Más espacio respecto a la tarjeta
+  }}
+></div>
+      <div style={{ marginBottom: "20px" }}>
+        <label htmlFor="anioInicioPartidos" style={{ marginRight: "10px", color: "white" }}>
           Año de Inicio (Partidos):
         </label>
         <input
@@ -218,9 +259,16 @@ function EquipoSeleccionado({ equipo, liga }) {
           id="anioInicioPartidos"
           value={anioInicioPartidos}
           onChange={(e) => setAnioInicioPartidos(e.target.value)}
-          style={{ marginRight: "20px" }}
+          style={{
+            marginRight: "20px",
+            backgroundColor: "transparent",
+            border: "none",
+            borderBottom: "1px solid white",
+            color: "white",
+            outline: "none",
+          }}
         />
-        <label htmlFor="anioFinalPartidos" style={{ marginRight: "10px" }}>
+        <label htmlFor="anioFinalPartidos" style={{ marginRight: "10px", color: "white" }}>
           Año Final (Partidos):
         </label>
         <input
@@ -228,21 +276,33 @@ function EquipoSeleccionado({ equipo, liga }) {
           id="anioFinalPartidos"
           value={anioFinalPartidos}
           onChange={(e) => setAnioFinalPartidos(e.target.value)}
+          style={{
+            backgroundColor: "transparent",
+            border: "none",
+            borderBottom: "1px solid white",
+            color: "white",
+            outline: "none",
+          }}
         />
       </div>
 
-      {/* Contenedor para la gráfica de partidos */}
+      {/* Gráfica de Partidos */}
       <div
-        id="chart-container-partidos"
-        style={{ marginTop: "20px", textAlign: "center" }}
-      >
-        <h3>Gráfica de Partidos</h3>
-        <div style={{ width: "80%", margin: "0 auto", height: "400px" }}>
-          <Bar data={dataPartidos} options={optionsPartidos} />
-        </div>
-      </div>
+    id="chart-container-partidos"
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      width: "100%",
+    }}
+  >
+    <h3 style={{ color: "white", textAlign: "center" }}>Gráfica de Partidos</h3>
+    <div style={{ width: "60%", maxWidth: "800px", height: "400px" }}>
+      <Bar data={dataPartidos} options={optionsPartidos} />
     </div>
-  );
+  </div>
+    </div>
+  </div>
+);
 }
-
 export default EquipoSeleccionado;
