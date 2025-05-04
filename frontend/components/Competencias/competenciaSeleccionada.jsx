@@ -199,7 +199,7 @@ return (
     flexDirection: "column",
     alignItems: "center", // Centrado horizontal
     width: "100%",
-    marginTop: "40px", // Más espacio respecto a la tarjeta
+    marginTop: "60px", // Más espacio respecto a la tarjeta
   }}
 >
       {/* Selectores de rango de años para goles */}
@@ -265,7 +265,7 @@ return (
     flexDirection: "column",
     alignItems: "center", // Centrado horizontal
     width: "100%",
-    marginTop: "40px", // Más espacio respecto a la tarjeta
+    marginTop: "100px", // Más espacio respecto a la tarjeta
   }}
 ></div>
       <div style={{ marginBottom: "20px" }}>
