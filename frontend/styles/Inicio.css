@@ -64,17 +64,49 @@
 
 .contenido {
   display: flex;
-  gap: 2rem;
+  height: 100vh;         /* altura total del contenedor */
+  position: relative;     /* para posicionar el pseudo-elemento */
+  align-items: center;    /* centra verticalmente el pseudo-elemento */
 }
 
+/* Paneles (iguales a como ya los tenías) */
 .panel-izquierdo {
-  width: 25%;
+  flex: 1;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
-  gap: 1rem;
+  background-color: #1c1c1c;
+  color: white;
+  padding-right: 20px;
 }
 
 .panel-derecho {
-  width: 75%;
+  flex: 2;
+  padding-left: 20px;
 }
+
+/* Pseudo-elemento que actúa de “divider” */
+.contenido::after {
+  content: "";
+  position: absolute;
+  
+  /* Posición horizontal: entre los 1fr y 2fr de los paneles */
+  left: calc((1 / (1 + 2)) * 100%); /* 33.33% */
+  
+  /* Tamaño y forma */
+  width: 3px;       /* grosor de la línea */
+  height: 60%;      /* sólo el 60% de la altura total */
+  
+  /* Centrado vertical: (100% - 60%) / 2 = 20% desde arriba */
+  top: 20%;
+  
+  /* Degradado vertical: transparente → semitransparente → transparente */
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(255,255,255,0.4) 40%,
+    transparent
+  );
+}
+

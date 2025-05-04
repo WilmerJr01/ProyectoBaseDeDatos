@@ -33,8 +33,8 @@ export function interceptorCompetition(competition){
             return "FIFA Club World Cup";
         case "ecuador":
             return "Liga Pro Betcris";
-        default:
-            return competition;
+        case "UEFA CL":
+            return "Champions League";
     }
 }
 
@@ -68,5 +68,7 @@ export function interceptorCompetitionCountry(competition) {
             return "Ecuador";
         case "Fifa Club":
             return "Mundo"
+        case "UEFA CL":
+            return "Europa";
     }
 }

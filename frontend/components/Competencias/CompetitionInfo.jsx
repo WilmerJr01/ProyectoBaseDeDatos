@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import '../../styles/CompetitionInfo.css'; // Asegúrate de crear este archivo CSS
+import "../../styles/CompetitionInfo.css"; // Asegúrate de crear este archivo CSS
 import { interceptorCompetition } from "../../functions/functions"; // Ajusta la ruta si es necesario
 import { interceptorCompetitionCountry } from "../../functions/functions";
 
@@ -14,13 +14,19 @@ function CompetitionInfo({ liga }) {
       transition={{ duration: 0.5 }}
       className="competition-card"
     >
+      <img
+        className="img-competition"
+        src={`../../assets/${name}.webp`}
+        alt=""
+      />
+
       <h2 className="competition-title">{interceptorCompetition(name)}</h2>
-      
+
       {/* Aquí añadimos la región/pais debajo del nombre */}
       <p className="competition-country">
         {interceptorCompetitionCountry(name)}
       </p>
-      
+
       <div className="competition-stats">
         <div className="stat-item">
           <span className="stat-value">{totalGoals}</span>
