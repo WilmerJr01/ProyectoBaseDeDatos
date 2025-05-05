@@ -1,85 +1,120 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 import {
-    interceptorCompetition,
-    interceptorCompetitionCountry,
+  interceptorCompetition,
+  interceptorCompetitionCountry,
 } from "../functions/functions.js";
 import MapaMundi from "./Inicio/MapaMundi.jsx";
 import CompeticionLogos from "./Inicio/CompetitionLogo.jsx";
 import "../styles/Inicio.css";
-
-// No olvides que este objeto también lo necesitas
-const leagueToCountry = {
-    argentina: "Argentina",
-    brazil: "Brazil",
-    colombia: "Colombia",
-    ecuador: "Ecuador",
-    england: "United Kingdom",
-    france: "France",
-    germany: "Germany",
-    italy: "Italy",
-    netherlands: "Netherlands",
-    portugal: "Portugal",
-    spain: "Spain",
-    uruguay: "Uruguay",
-};
+import Select from "react-select";
 
 function Inicio() {
-    const [competitions, setCompetitions] = useState([]);
-    const [paisSeleccionado, setPaisSeleccionado] = useState(null);
+  const [paisSeleccionado, setPaisSeleccionado] = useState(null);
+  const [competitionsInfo, setCompetitionsInfo] = useState([]);
+  const [filtroContinente, setFiltroContinente] = useState(null); // Cambiar "" a null
 
-    useEffect(() => {
-        axios
-            .get("http://localhost:3000/database/competitions")
-            .then((res) => setCompetitions(res.data))
-            .catch((err) =>
-                console.error("Error al obtener competiciones:", err)
-            );
-    }, []);
+  useEffect(() => {
+    axios
+      .get("http://localhost:3000/database/competitionsInfo")
+      .then((res) => setCompetitionsInfo(res.data))
+      .catch((err) => console.error("Error al obtener info:", err));
+  }, []);
 
-    // Función para obtener la información de la liga por país
-    const getInfoLigaPorPais = () => {
-        if (!paisSeleccionado) return null;
-        return (
-            competitions.find(
-                (c) =>
-                    leagueToCountry[c.league?.toLowerCase()] === paisSeleccionado
-            ) || null
-        );
-    };
+  const customStyles = {
+    control: (provided) => ({
+      ...provided,
+      backgroundColor: "transparent",
+      border: "none",
+      borderBottom: "2px solid white",
+      borderRadius: 0,
+      boxShadow: "none",
+      minHeight: "30px",
+      fontSize: "15px",
+      color: "white",
+      width: "300px",
+    }),
+    menu: (provided) => ({
+        ...provided,
+        backgroundColor: "transparent",
+        zIndex: 9999,
+        position: "absolute",
+      }),
+    menuList: (provided) => ({
+      ...provided,
+      backgroundColor: "transparent",
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isFocused ? "rgb(83, 79, 79)" : "#151219",
+      color: "white",
+      cursor: "pointer",
+    }),
+    singleValue: (provided) => ({
+      ...provided,
+      color: "white",
+    }),
+    dropdownIndicator: (provided) => ({
+      ...provided,
+      color: "white",
+      padding: "2px",
+    }),
+    indicatorSeparator: () => ({ display: "none" }),
+  };
 
-    const info = getInfoLigaPorPais();
-    const nombreLiga = info
-        ? interceptorCompetition(info.league)
-        : "Nombre de la Liga";
-    const paisOContinente = info
-        ? interceptorCompetitionCountry(info.league)
-        : "Continente";
+  const continentes = [
+    { value: null, label: "Todos" }, // Cambiar "" a null
+    { value: "Europe", label: "Competencias europeas" },
+    { value: "South America", label: "Competencias sudamericanas" },
+    { value: "goles", label: "Cantidad de goles" },
+  ];
+  
 
-    return (
-        <main className="inicio">
-            <div className="logos">
-                <CompeticionLogos competitions={competitions} />
-            </div>
+  return (
+    <main className="inicio">
+      <div className="logos">
+        <CompeticionLogos competitions={competitionsInfo} />
+      </div>
 
-            <div className="contenido">
-                <div className="panel-izquierdo">
-                    <h2>{paisSeleccionado}</h2>
-                    <p>{paisOContinente}</p>
-                    {paisSeleccionado && (
-                        <p><strong>País seleccionado: {paisSeleccionado}</strong></p>
-                    )}
-                </div>
+      <div className="contenido">
+        <div className="panel-izquierdo">
+          <img
+            src={
+              paisSeleccionado
+                ? `../../assets/${paisSeleccionado}.webp`
+                : `../../assets/mascota.png`
+            }
+            alt={paisSeleccionado || "Mascota"}
+          />
+          <h2>{interceptorCompetition(paisSeleccionado)}</h2>
+          <p>{interceptorCompetitionCountry(paisSeleccionado)}</p>
+        </div>
 
-                <div className="panel-derecho">
-                    <MapaMundi
-                        competitions={competitions}
-                        onCountrySelect={setPaisSeleccionado}
-                    />
-                </div>
-            </div>
-        </main>
-    );
+        <div className="panel-derecho">
+          <div className="filtro-continente">
+            <label htmlFor="filtro">Filtrar por:</label>
+            <Select
+              id="filtro"
+              className="select"
+              options={continentes}
+              value={continentes.find((c) => c.value === filtroContinente)}
+              onChange={(e) => setFiltroContinente(e ? e.value : null)} // Manejar null correctamente
+              styles={customStyles}
+              placeholder="-- Selecciona un continente --"
+              isClearable
+            />
+          </div>
+
+          <MapaMundi
+            competitionsInfo={competitionsInfo}
+            filtroContinente={filtroContinente}
+            onCountrySelect={setPaisSeleccionado}
+            modoGoles={filtroContinente === "goles"}
+          />
+        </div>
+      </div>
+    </main>
+  );
 }
 
 export default Inicio;

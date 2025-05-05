@@ -353,6 +353,156 @@ exports.deleteMatches = async (req, res) => {
   }
 };
 
+exports.getCompetitionsInfo = async (req, res) => {
+  try {
+    const resultado = await model.aggregate([
+      {
+        $project: {
+          competition: 1,
+          levelCompetition: 1,
+          homeContinent: 1,
+          awayContinent: 1,
+          goalsHome: 1,
+          goalsAway: 1
+        }
+      },
+      {
+        $addFields: {
+          continent: {
+            $cond: [
+              { $eq: ["$levelCompetition", "national"] },
+              "$homeContinent",
+              {
+                $cond: [
+                  { $eq: ["$homeContinent", "$awayContinent"] },
+                  "$homeContinent",
+                  "world"
+                ]
+              }
+            ]
+          },
+          totalGoals: {
+            $add: [
+              { $ifNull: ["$goalsHome", 0] },
+              { $ifNull: ["$goalsAway", 0] }
+            ]
+          }
+        }
+      },
+      {
+        $group: {
+          _id: "$competition",
+          continent: { $first: "$continent" },
+          totalGoals: { $sum: "$totalGoals" }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          competition: "$_id",
+          continent: 1,
+          totalGoals: 1
+        }
+      }
+    ]);
+
+    res.json(resultado);
+  } catch (err) {
+    console.error("Error al obtener la información de competiciones:", err);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+};
+
+
+exports.enfrentamiento = async (req, res) => {
+  const { league, equipo1, equipo2 } = req.params;
+
+  try {
+    const partidos = await model.find({
+      competition: league,
+      $or: [
+        { teamHome: equipo1, teamAway: equipo2 },
+        { teamHome: equipo2, teamAway: equipo1 }
+      ]
+    });
+
+    let golesEquipo1 = 0;
+    let golesEquipo2 = 0;
+    let victoriasEquipo1 = 0;
+    let victoriasEquipo2 = 0;
+    let empates = 0;
+
+    let mayorVictoriaEquipo1 = null; // { golesFavor, golesContra, fecha }
+    let mayorVictoriaEquipo2 = null;
+
+    for (const partido of partidos) {
+      const { teamHome, teamAway, goalsHome, goalsAway, date } = partido;
+
+      let esEquipo1Local = teamHome === equipo1 && teamAway === equipo2;
+      let esEquipo1Visitante = teamHome === equipo2 && teamAway === equipo1;
+
+      let goles1 = esEquipo1Local ? goalsHome : goalsAway;
+      let goles2 = esEquipo1Local ? goalsAway : goalsHome;
+
+      // Goles totales
+      golesEquipo1 += goles1;
+      golesEquipo2 += goles2;
+
+      // Resultado
+      if (goles1 > goles2) {
+        victoriasEquipo1++;
+        let diferencia = goles1 - goles2;
+        if (!mayorVictoriaEquipo1 || diferencia > (mayorVictoriaEquipo1.golesFavor - mayorVictoriaEquipo1.golesContra)) {
+          mayorVictoriaEquipo1 = {
+            golesFavor: goles1,
+            golesContra: goles2,
+            fecha: date
+          };
+        }
+      } else if (goles1 < goles2) {
+        victoriasEquipo2++;
+        let diferencia = goles2 - goles1;
+        if (!mayorVictoriaEquipo2 || diferencia > (mayorVictoriaEquipo2.golesFavor - mayorVictoriaEquipo2.golesContra)) {
+          mayorVictoriaEquipo2 = {
+            golesFavor: goles2,
+            golesContra: goles1,
+            fecha: date
+          };
+        }
+      } else {
+        empates++;
+      }
+    }
+
+    res.json({
+      enfrentamientos: partidos.length,
+      golesEquipo1,
+      golesEquipo2,
+      victoriasEquipo1,
+      victoriasEquipo2,
+      empates,
+      mayorVictoriaEquipo1: mayorVictoriaEquipo1
+        ? {
+            marcador: `${mayorVictoriaEquipo1.golesFavor}-${mayorVictoriaEquipo1.golesContra}`,
+            fecha: mayorVictoriaEquipo1.fecha
+          }
+        : null,
+      mayorVictoriaEquipo2: mayorVictoriaEquipo2
+        ? {
+            marcador: `${mayorVictoriaEquipo2.golesFavor}-${mayorVictoriaEquipo2.golesContra}`,
+            fecha: mayorVictoriaEquipo2.fecha
+          }
+        : null
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al obtener los enfrentamientos' });
+  }
+};
+
+
+
 // Esta función se encarga de leer un archivo CSV y cargar sus datos en la base de datos
 exports.fillData = async (req, res) => {
   const filePath = "models/dataset/games.csv";
