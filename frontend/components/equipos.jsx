@@ -35,7 +35,7 @@ function Equipos() {
           value: nombre,
           label: nombre,
         }));
-        setEquipos(opcionesEquipos); // Configurar correctamente el estado
+        setEquipos(opcionesEquipos);
         console.log("Equipos:", opcionesEquipos);
       })
       .catch((err) => console.error("Error al cargar equipos", err));

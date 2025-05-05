@@ -1,48 +1,75 @@
-.competicion-logos {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    gap: 1rem;
-    padding: 1rem;
-    margin: 0 auto;
-    justify-content: center;
+.bienvenida {
+  text-align: center;
 }
 
+.bienvenida p {
+  font-size: 18px;
+  color: white;
+  margin-top: 10px;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.competicion-logos {
+  display: flex;
+  flex-wrap: wrap; /* Asegura que se ajusten */
+  overflow-x: hidden; /* Elimina el scroll horizontal */
+  gap: 1rem;
+  padding: 1rem;
+  margin: 0 auto;
+  justify-content: center;
+  max-width: 100%; /* Asegura que no se desborde */
+  box-sizing: border-box; /* Cuenta padding en el ancho */
+  height: auto;
+}
+
+
 .competicion-logo {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex-shrink: 0;
-    text-align: center;
-    transition: transform 0.3s ease, margin 0.3s ease; /* Añadimos la transición de margin */
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.5s ease forwards;
+  animation-delay: calc(var(--i) * 100ms);
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Estilo para los logos */
 .competicion-logo img {
-    height: 55px;
-    width: auto;
-    object-fit: contain;
-    transition: transform 0.3s, filter 0.3s;
-    cursor: pointer;
-    filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0)); /* Sin sombra por defecto */
+  height: 55px;
+  width: auto;
+  object-fit: contain;
+  transition: transform 0.3s, filter 0.3s;
+  cursor: pointer;
+  filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0)); /* Sin sombra por defecto */
+  
 }
 
 /* Solo el logo seleccionado o en hover recibe el efecto de escala y sombra */
 .competicion-logo img.selected,
 .competicion-logo img:hover {
-    transform: scale(1.4);
-    filter: drop-shadow(0 0 8px rgba(0, 128, 255, 0.6)); /* Sombra iluminada */
+  transform: scale(1.4);
+  filter: drop-shadow(0 0 8px rgba(0, 128, 255, 0.6)); /* Sombra iluminada */
 }
 
 /* Cuando un logo NO está seleccionado, ajusta su espacio */
 .competicion-logo:not(.selected) {
-    margin-left: 0px; /* Mueve todos los logos no seleccionados a la derecha */
-    margin-right: 0px;
+  margin-left: 0px; /* Mueve todos los logos no seleccionados a la derecha */
+  margin-right: 0px;
 }
 
 .competicion-logo.selected {
-    margin-left: 10px; /* El logo seleccionado no tiene margen a la izquierda */
-    margin-right: 10px; /* El logo seleccionado no tiene margen a la derecha */
+  margin-left: 10px; /* El logo seleccionado no tiene margen a la izquierda */
+  margin-right: 10px; /* El logo seleccionado no tiene margen a la derecha */
 }
 
 .inicio {
@@ -64,9 +91,9 @@
 
 .contenido {
   display: flex;
-  height: 100vh;         /* altura total del contenedor */
-  position: relative;     /* para posicionar el pseudo-elemento */
-  align-items: center;    /* centra verticalmente el pseudo-elemento */
+  height: 100vh; /* altura total del contenedor */
+  position: relative; /* para posicionar el pseudo-elemento */
+  align-items: center; /* centra verticalmente el pseudo-elemento */
 }
 
 /* Paneles (iguales a como ya los tenías) */
@@ -81,7 +108,7 @@
   padding-right: 20px;
 }
 
-.panel-izquierdo h2{
+.panel-izquierdo h2 {
   margin-top: 5px;
   margin-bottom: 5px;
   font-size: 2rem;
@@ -110,22 +137,22 @@
 .contenido::after {
   content: "";
   position: absolute;
-  
+
   /* Posición horizontal: entre los 1fr y 2fr de los paneles */
   left: calc((1 / (1 + 2)) * 100%); /* 33.33% */
-  
+
   /* Tamaño y forma */
-  width: 3px;       /* grosor de la línea */
-  height: 60%;      /* sólo el 60% de la altura total */
-  
+  width: 3px; /* grosor de la línea */
+  height: 60%; /* sólo el 60% de la altura total */
+
   /* Centrado vertical: (100% - 60%) / 2 = 20% desde arriba */
   top: 20%;
-  
+
   /* Degradado vertical: transparente → semitransparente → transparente */
   background: linear-gradient(
     to bottom,
     transparent,
-    rgba(255,255,255,0.4) 40%,
+    rgba(255, 255, 255, 0.4) 40%,
     transparent
   );
 }
@@ -141,4 +168,3 @@
 .select {
   display: inline-block;
 }
-

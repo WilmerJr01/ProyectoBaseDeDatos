@@ -17,7 +17,7 @@ function CompeticionLogos({ competitions }) {
   return (
     <div className="competicion-logos">
       {competitions.map((comp, index) => {
-        const name = comp.competition; // ✅ acceso al nombre
+        const name = comp.competition;
         const isHovered = hoverIndex === index;
         const isActive = isHovered || (hoverIndex === null && selectedIndex === index);
         const isSelected = isActive;
@@ -26,6 +26,7 @@ function CompeticionLogos({ competitions }) {
           <div
             key={index}
             className={`competicion-logo ${isSelected ? "selected" : ""}`}
+            style={{ "--i": index }}
             onMouseEnter={() => {
               setHoverIndex(index);
               setIsAutoSelecting(false);
