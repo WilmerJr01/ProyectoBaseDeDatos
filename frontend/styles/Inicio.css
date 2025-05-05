@@ -81,8 +81,28 @@
   padding-right: 20px;
 }
 
+.panel-izquierdo h2{
+  margin-top: 5px;
+  margin-bottom: 5px;
+  font-size: 2rem;
+  text-align: center;
+}
+
+.panel-izquierdo p {
+  margin: 0;
+  font-size: 1.2rem;
+  text-align: center;
+  color: grey;
+}
+
+.panel-izquierdo img {
+  max-width: 100%;
+  max-height: 250px; /* Ajusta el tamaño máximo del logo */
+}
+
 .panel-derecho {
   flex: 2;
+  overflow: visible;
   padding-left: 20px;
 }
 
@@ -108,5 +128,17 @@
     rgba(255,255,255,0.4) 40%,
     transparent
   );
+}
+
+.filtro-continente {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+.filtro-continente label {
+  margin-right: 8px;
+}
+
+.select {
+  display: inline-block;
 }
 
