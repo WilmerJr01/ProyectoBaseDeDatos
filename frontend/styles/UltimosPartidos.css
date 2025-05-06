@@ -1,0 +1,70 @@
+/* Archivo UltimosPartidos.css */
+.partido-card {
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.178);
+    max-width: 800px;
+    border: 1px solid #ccc;
+    margin: 10px;
+  }
+  
+  .partido-contenedor {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .partido-info {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    font-size: 14px;
+    color: #686868;
+    margin-top: 5px; /* Reducido */
+    padding: 0;
+    line-height: 1.2; /* Hace que las líneas estén más cerca */
+    gap: 3px; /* Espacio pequeño entre líneas */
+}
+  
+  .equipos {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .equipo {
+    flex: 1;
+    text-align: center;
+    background-color: transparent;
+    padding: 0 20px;
+    border-radius: 8px;
+    margin-bottom: 0;
+  }
+  
+  .equipo h2 {
+    font-size: 18px;
+    color: hsl(0, 0%, 100%);
+    margin: 0;
+  }
+  
+  .vs {
+    font-size: 18px;
+    font-weight: bold;
+    color: #ffffff;
+    margin: 0;
+  }
+
+  .img {
+    max-width: 50px;
+    height: auto;
+    margin: 0 auto;
+  }
+
+  .partido-info p {
+    margin: 0;
+}
+
+.equipo h2,
+.vs h2 {
+    margin: 0;
+}

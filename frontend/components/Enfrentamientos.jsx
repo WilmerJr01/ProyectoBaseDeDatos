@@ -148,7 +148,7 @@ function Enfrentamientos() {
             isClearable
           />
         </div>
-        <img className="img"
+        <img className="img-enfrentamiento"
           src={
             selectedLiga
               ? `../../assets/${selectedLiga}.webp`

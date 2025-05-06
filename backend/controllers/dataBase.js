@@ -282,6 +282,7 @@ exports.getLastData = (req, res) => {
   model
     .find()
     .limit(10)
+    .sort({ date: -1 }) // Ordenar por fecha descendente
     .then((data) => {
       res.status(200).json(data);
     })

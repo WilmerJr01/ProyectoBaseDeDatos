@@ -75,8 +75,8 @@
 .inicio {
   display: flex;
   flex-direction: column;
-  background: #1a1a1a;
   color: white;
+  background: #1d1922;
   min-height: 100vh;
   padding: 1rem;
 }
@@ -103,7 +103,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #1c1c1c;
+  background-color: #1d1922;
   color: white;
   padding-right: 20px;
 }
@@ -167,4 +167,13 @@
 
 .select {
   display: inline-block;
+}
+
+.partidos-ultimos {
+  position: relative;
+  padding: 40px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
